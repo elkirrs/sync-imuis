@@ -11,10 +11,16 @@ use Illuminate\Support\Facades\DB;
 
 final class EloquentSyncRepository implements SyncRepository
 {
+    private ?string $dbConnection = null;
+
     public function __construct(
         protected BulkUpsert $bulkUpsert,
         protected BulkInsert $bulkInsert
-    ) {}
+    ) {
+        if ($this->dbConnection === null) {
+            $this->dbConnection = config('database.default');
+        }
+    }
 
     public function bulkUpsert(
         iterable $rows,
@@ -38,6 +44,7 @@ final class EloquentSyncRepository implements SyncRepository
             ->all();
 
         $this->bulkUpsert->execute(
+            connect: $this->dbConnection,
             table: $tableName,
             rows: $rows,
             uniqueBy: $uniqueBy
@@ -59,6 +66,7 @@ final class EloquentSyncRepository implements SyncRepository
         $this->bulkInsert->setLimitInsertBulk(2100);
 
         $this->bulkInsert->execute(
+            connect: $this->dbConnection,
             table: $tableName,
             rows: $arrays,
         );
@@ -116,7 +124,8 @@ final class EloquentSyncRepository implements SyncRepository
                     OUTPUT $action, inserted.id AS inserted_id;
                 ';
 
-        $results = DB::select($mergeSql, [$sourceId]);
+        $results = DB::connection($this->dbConnection)
+            ->select($mergeSql, [$sourceId]);
 
         $data = [
             'insert' => 0,
@@ -146,6 +155,16 @@ final class EloquentSyncRepository implements SyncRepository
         int $sourceId
     ): void {
 
-        DB::table($table)->where('connect_id', '=', $sourceId)->delete();
+        DB::connection($this->dbConnection)
+            ->table($table)
+            ->where('connect_id', '=', $sourceId)
+            ->delete();
+    }
+
+    public function setConnection(string $connection): self
+    {
+        $this->dbConnection = $connection;
+
+        return $this;
     }
 }

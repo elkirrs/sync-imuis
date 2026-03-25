@@ -9,6 +9,7 @@ use App\Modules\Connection\Domain\DTO\ConnectionDTO;
 use App\Modules\Connection\Domain\DTO\OptionsDTO;
 use App\Modules\Connection\Domain\Entities\ConnectionEntity;
 use App\Modules\Connection\Domain\ValueObjects\Active;
+use App\Modules\Connection\Domain\ValueObjects\CreatedDB;
 use App\Modules\Connection\Domain\ValueObjects\Description;
 use App\Modules\Connection\Domain\ValueObjects\Id;
 use App\Modules\Connection\Domain\ValueObjects\Name;
@@ -26,7 +27,8 @@ final class ConnectionMapper
             new Type($model->type),
             new Description($model->description),
             Options::fromJson($model->options),
-            new Active((bool) $model->is_active)
+            new Active((bool) $model->is_active),
+            new CreatedDB((bool) $model->is_created_db)
         );
     }
 
@@ -60,6 +62,7 @@ final class ConnectionMapper
             'description' => $entity->description->value,
             'options' => $entity->options->toJson(),
             'is_active' => $entity->isActive->value,
+            'is_created_db' => $entity->isCreatedDB->value,
         ];
     }
 }

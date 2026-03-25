@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('options');
             $table->boolean('is_active')->default(true);
             $table->text('description')->nullable();
+            $table->boolean('is_created_db')->default(false);
             $table->timestamps();
         });
     }

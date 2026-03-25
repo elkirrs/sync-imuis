@@ -6,6 +6,8 @@ namespace App\Modules\Sync\Domain\Repositories;
 
 interface SyncRepository
 {
+    public function setConnection(string $connection): self;
+
     public function bulkUpsert(iterable $rows, string $tableName, array $uniqueBy): void;
 
     public function bulkInsert(iterable $rows, string $tableName): void;

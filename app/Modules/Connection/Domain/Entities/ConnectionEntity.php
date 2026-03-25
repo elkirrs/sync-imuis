@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Connection\Domain\Entities;
 
 use App\Modules\Connection\Domain\ValueObjects\Active;
+use App\Modules\Connection\Domain\ValueObjects\CreatedDB;
 use App\Modules\Connection\Domain\ValueObjects\Description;
 use App\Modules\Connection\Domain\ValueObjects\Id;
 use App\Modules\Connection\Domain\ValueObjects\Name;
@@ -44,6 +45,22 @@ class ConnectionEntity
                 return $this->isActive;
             }
         },
+
+        public CreatedDB $isCreatedDB = new CreatedDB(false) {
+            get {
+                return $this->isCreatedDB;
+            }
+        },
     ) {
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = new Id($id);
+    }
+
+    public function createdDB(bool $isCreateDB): void
+    {
+        $this->isCreatedDB = new CreatedDB($isCreateDB);
     }
 }

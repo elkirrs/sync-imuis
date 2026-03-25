@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\Connection;
 use App\Modules\Connection\Enums\IsActiveConnection;
+use App\Modules\Connection\Enums\IsCreateDB;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Illuminate\Support\Collection;
 use Yajra\DataTables\EloquentDataTable;
@@ -32,6 +33,9 @@ final class ConnectionDataTable extends BaseDataTable
             })
             ->editColumn('is_active', function ($query) {
                 return IsActiveConnection::from($query->is_active)->toString();
+            })
+            ->editColumn('is_created_db', function ($query) {
+                return IsCreateDB::from($query->is_created_db)->toString();
             })
             ->rawColumns(['actions']);
     }
@@ -65,6 +69,9 @@ final class ConnectionDataTable extends BaseDataTable
             Column::make('is_active')
                 ->title('Active'),
 
+            Column::make('is_created_db')
+                ->title('Database'),
+
             Column::make('created_at')
                 ->title('Created'),
 
@@ -82,6 +89,12 @@ final class ConnectionDataTable extends BaseDataTable
             .' class="p-1"'
             .' title="edit"'
             .'><i class="bi bi-pencil-square md-icon"></i></a>';
+
+        if (! (bool) $query->is_created_db) {
+            $actions .= '<a href="'.route('connections.tenant.create', ['id' => $query->id]).'"'
+                .' class="p-1 text-warning"'
+                .'><i class="bi bi-database-add md-icon"></i></a>';
+        }
 
         $actions .= '<a href="javascript:void(0)"'
             .' class="delete-item p-1 text-danger"'

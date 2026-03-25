@@ -18,6 +18,7 @@ final class Connection extends Model
         'options',
         'description',
         'is_active',
+        'is_created_db',
     ];
 
     protected $casts = [
@@ -26,5 +27,6 @@ final class Connection extends Model
         'options' => 'string',
         'description' => 'string',
         'is_active' => 'boolean',
+        'is_created_db' => 'boolean',
     ];
 }

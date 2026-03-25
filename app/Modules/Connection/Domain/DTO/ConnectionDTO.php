@@ -13,6 +13,7 @@ final class ConnectionDTO
         public string $description,
         public OptionsDTO $options,
         public bool $isActive,
+        public bool $isCreatedDB,
     ) {}
 
     public function toArray(): array
@@ -24,6 +25,7 @@ final class ConnectionDTO
             'description' => $this->description,
             'options' => $this->options->toArray(),
             'is_active' => $this->isActive,
+            'is_created_db' => $this->isCreatedDB,
         ];
     }
 }

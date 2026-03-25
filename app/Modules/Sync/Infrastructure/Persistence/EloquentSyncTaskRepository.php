@@ -13,10 +13,14 @@ use App\Shared\Infrastructure\Persistence\BulkUpsert;
 
 final class EloquentSyncTaskRepository implements SyncTaskRepository
 {
+    private string $connect;
+
     public function __construct(
         protected Sync $repository,
         protected BulkUpsert $bulk
-    ) {}
+    ) {
+        $this->connect = config('database.default');
+    }
 
     public function save(
         SyncTaskEntity $entity
@@ -41,6 +45,7 @@ final class EloquentSyncTaskRepository implements SyncTaskRepository
         })();
 
         $this->bulk->execute(
+            connect: $this->connect,
             table: $tableName,
             rows: $arrays,
             uniqueBy: $uniqueBy
@@ -65,5 +70,14 @@ final class EloquentSyncTaskRepository implements SyncTaskRepository
             ->first();
 
         return SyncTaskMapper::toEntity($model);
+    }
+
+    public function setConnection(
+        string $connection
+    ): SyncTaskRepository {
+
+        $this->connect = $connection;
+
+        return $this;
     }
 }

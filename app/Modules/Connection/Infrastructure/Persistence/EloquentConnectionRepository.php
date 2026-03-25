@@ -16,12 +16,16 @@ class EloquentConnectionRepository implements ConnectionReadRepository, Connecti
         protected Connection $model
     ) {}
 
-    public function save(ConnectionEntity $entity): void
+    public function save(ConnectionEntity &$entity): void
     {
-        $this->model->query()->updateOrCreate(
+        $out = $this->model->query()->updateOrCreate(
             ['id' => $entity->id->value],
             ConnectionMapper::toPersistence($entity)
         );
+
+        if (empty($entity->id->value)) {
+            $entity->setId($out?->id);
+        }
     }
 
     public function findOne(int $int): ConnectionEntity

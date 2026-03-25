@@ -8,7 +8,7 @@ use App\Modules\Connection\Domain\Entities\ConnectionEntity;
 
 interface ConnectionRepository
 {
-    public function save(ConnectionEntity $entity): void;
+    public function save(ConnectionEntity &$entity): void;
 
     public function findOne(int $int): ConnectionEntity;
 

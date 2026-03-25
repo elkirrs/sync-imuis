@@ -7,11 +7,12 @@ namespace App\Shared\Infrastructure\Persistence;
 use App\Helpers\Helper;
 use Illuminate\Support\Facades\DB;
 
-class BulkUpsert
+final class BulkUpsert
 {
     protected int $limitBulk = 2100;
 
     public function execute(
+        string $connect,
         string $table,
         iterable $rows,
         array $uniqueBy,
@@ -31,17 +32,18 @@ class BulkUpsert
             $buffer[] = $row;
 
             if (count($buffer) >= $newChunk) {
-                $this->flush($table, $buffer, $uniqueBy, $updateColumns);
+                $this->flush($connect, $table, $buffer, $uniqueBy, $updateColumns);
                 $buffer = [];
             }
         }
 
         if ($buffer) {
-            $this->flush($table, $buffer, $uniqueBy, $updateColumns);
+            $this->flush($connect, $table, $buffer, $uniqueBy, $updateColumns);
         }
     }
 
     private function flush(
+        string $connect,
         string $table,
         array $buffer,
         array $uniqueBy,
@@ -51,11 +53,13 @@ class BulkUpsert
         $updateColumns = $updateColumns
             ?? array_diff(array_keys($buffer[0]), $uniqueBy);
 
-        DB::table($table)->upsert(
-            $buffer,
-            $uniqueBy,
-            $updateColumns
-        );
+        DB::connection($connect)
+            ->table($table)
+            ->upsert(
+                $buffer,
+                $uniqueBy,
+                $updateColumns
+            );
 
     }
 }

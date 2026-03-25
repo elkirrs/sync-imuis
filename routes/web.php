@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Connection\Interfaces\Http\ConnectionCreateCommand;
+use App\Modules\Connection\Interfaces\Http\ConnectionCreateTenantCommand;
 use App\Modules\Connection\Interfaces\Http\ConnectionDeleteCommand;
 use App\Modules\Connection\Interfaces\Http\ConnectionEditCommand;
 use App\Modules\Connection\Interfaces\Http\ConnectionIndexCommand;
@@ -45,6 +46,7 @@ Route::prefix('connections')
         Route::get('edit/{id}', ConnectionEditCommand::class)->name('edit');
         Route::put('update/{id}', action: ConnectionUpdateCommand::class)->name('update');
         Route::delete('delete/{id}', action: ConnectionDeleteCommand::class)->name('delete');
+        Route::get('tenant/{id}/create', action: ConnectionCreateTenantCommand::class)->name('tenant.create');
     });
 
 Route::prefix('sync')

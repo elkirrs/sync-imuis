@@ -11,7 +11,7 @@ use App\Modules\Sync\Infrastructure\Factories\TableAdaptorFactory;
 use App\Shared\Infrastructure\Connections\IntegrationConnection;
 use App\Shared\Infrastructure\Factories\ClientFactory;
 
-final class SyncCommandHandler
+final readonly class SyncCommandHandler
 {
     public function __construct(
         private ClientFactory $clientFactory,
@@ -48,6 +48,8 @@ final class SyncCommandHandler
 
         $table = strtolower($command->table);
         $stagingTable = 'staging_'.$table;
+
+        $this->syncRepository->setConnection('tenant');
 
         $this->syncRepository->delete($stagingTable, $connect->id->value);
 

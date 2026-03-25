@@ -33,4 +33,11 @@ final readonly class Helper
 
         return min($chunk, $maxRowsPerBatch);
     }
+
+    public static function TenantName(
+        int|string $name,
+        string $glue = '_'
+    ): string {
+        return config('tenant.prefix').$glue.$name;
+    }
 }

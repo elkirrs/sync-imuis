@@ -10,7 +10,7 @@ class TransactionManager
 {
     public function run(
         callable $callback,
-        int $attempts = 3
+        int $attempts = 1
     ): mixed {
 
         return DB::transaction(

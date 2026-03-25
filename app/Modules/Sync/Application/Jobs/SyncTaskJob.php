@@ -11,6 +11,7 @@ use App\Modules\Sync\Domain\DTO\ReasonDTO;
 use App\Modules\Sync\Domain\DTO\SyncTaskDTO;
 use App\Modules\Sync\Enums\SyncTaskStatusEnum;
 use App\Shared\Infrastructure\Bus\CommandBus;
+use App\Shared\Infrastructure\Database\TenantConnectionManager;
 use App\Shared\Infrastructure\Persistence\CacheStorage;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -44,6 +45,7 @@ class SyncTaskJob implements ShouldQueue
      */
     public function handle(
         CommandBus $commandBus,
+        TenantConnectionManager $tenant,
     ): void {
 
         Log::info('SyncTaskJob', ['msg' => SyncTaskStatusEnum::Processing->toString()]);
@@ -54,6 +56,9 @@ class SyncTaskJob implements ShouldQueue
         $lockKey = "lock:{$clientId}:{$table}";
         $isLock = $this->cache->acquire($lockKey, $uuid, $this->timeout);
         $resultKey = 'sync:result:'.$this->syncTaskDTO->uuid;
+
+        $tenantDB = Helper::TenantName($clientId);
+        $tenant->connect($tenantDB);
 
         if (! $isLock) {
             $runningUuid = $this->cache->getValue($lockKey);

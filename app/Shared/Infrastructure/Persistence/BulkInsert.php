@@ -18,6 +18,7 @@ final class BulkInsert
     }
 
     public function execute(
+        string $connect,
         string $table,
         iterable $rows,
         int $chunk = 500
@@ -35,21 +36,24 @@ final class BulkInsert
             $buffer[] = $row;
 
             if (count($buffer) >= $newChunk) {
-                $this->flush($table, $buffer);
+                $this->flush($connect, $table, $buffer);
                 $buffer = [];
             }
         }
 
         if ($buffer) {
-            $this->flush($table, $buffer);
+            $this->flush($connect, $table, $buffer);
         }
     }
 
     private function flush(
+        string $connect,
         string $table,
         array $buffer,
     ): void {
 
-        DB::table($table)->insert($buffer);
+        DB::connection($connect)
+            ->table($table)
+            ->insert($buffer);
     }
 }

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Connection\Application\CommandHandlers;
 
 use App\Modules\Connection\Application\Commands\ConnectionSaveCommand;
+use App\Modules\Connection\Application\Services\CreateTenantDataBaseService;
 use App\Modules\Connection\Domain\Entities\ConnectionEntity;
 use App\Modules\Connection\Domain\Repositories\ConnectionRepository;
 use App\Modules\Connection\Domain\ValueObjects\Active;
 use App\Modules\Connection\Domain\ValueObjects\AdministrationCode;
 use App\Modules\Connection\Domain\ValueObjects\AuthCode;
+use App\Modules\Connection\Domain\ValueObjects\CreatedDB;
 use App\Modules\Connection\Domain\ValueObjects\Description;
 use App\Modules\Connection\Domain\ValueObjects\Id;
 use App\Modules\Connection\Domain\ValueObjects\Name;
@@ -23,6 +25,7 @@ readonly class ConnectionSaveCommandHandler
 {
     public function __construct(
         private ConnectionRepository $repo,
+        private CreateTenantDataBaseService $dbService,
     ) {}
 
     public function __invoke(
@@ -42,8 +45,16 @@ readonly class ConnectionSaveCommandHandler
                 tables: new Tables($command->tables),
             ),
             isActive: new Active($command->isActive),
+            isCreatedDB: new CreatedDB(false)
         );
 
         $this->repo->save($entity);
+
+        $this->dbService->createForConnection($entity);
+
+        $entity->createdDB(true);
+
+        $this->repo->save($entity);
+
     }
 }
