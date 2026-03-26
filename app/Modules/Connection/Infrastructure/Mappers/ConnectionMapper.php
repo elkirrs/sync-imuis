@@ -49,6 +49,7 @@ final class ConnectionMapper
                 tables: $entity->options?->tables?->value,
             ),
             isActive: $entity->isActive->value,
+            isCreatedDB: $entity->isCreatedDB->value,
         );
     }
 
