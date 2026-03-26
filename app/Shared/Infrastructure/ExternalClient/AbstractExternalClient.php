@@ -22,6 +22,7 @@ abstract class AbstractExternalClient
         try {
 
             $response = Http::asForm()
+                ->withoutVerifying()
                 ->retry($retry, 2000)
                 ->timeout($timeout)
                 ->withHeaders([
