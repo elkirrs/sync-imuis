@@ -46,10 +46,14 @@ final class SyncDataTable extends BaseDataTable
      */
     public function query(): QueryBuilder
     {
+        $date = now()->subDays(14)->format('Y-m-d');
+
         return Sync::query()
             ->select([
                 'sync.*',
-            ]);
+            ])
+            ->where('created_at', '>', $date)
+            ;
     }
 
     /**
@@ -61,7 +65,7 @@ final class SyncDataTable extends BaseDataTable
             Column::make('uuid')
                 ->title(__('UUID'))
                 ->searchable(false)
-                ->orderable(false),
+                ->orderable(true),
             Column::make('name')
                 ->title(__('Name'))
                 ->searchable(false)
@@ -70,7 +74,7 @@ final class SyncDataTable extends BaseDataTable
             Column::make('status')
                 ->title(__('Status'))
                 ->searchable(false)
-                ->orderable(false),
+                ->orderable(true),
 
             Column::make('attempts')
                 ->title(__('Attempts'))
@@ -80,17 +84,17 @@ final class SyncDataTable extends BaseDataTable
             Column::make('available_at')
                 ->title(__('Available At'))
                 ->searchable(false)
-                ->orderable(false),
+                ->orderable(true),
 
             Column::make('created_at')
                 ->title(__('Created At'))
                 ->searchable(false)
-                ->orderable(false),
+                ->orderable(true),
 
             Column::make('finished_at')
                 ->title(__('Finished At'))
                 ->searchable(false)
-                ->orderable(false),
+                ->orderable(true),
 
             Column::make('actions')
                 ->title('Actions')
