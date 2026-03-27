@@ -53,7 +53,7 @@ final class CreAdapter extends AbstractAdapter
 
     public function unique(): array
     {
-        return 'NR';
+        return ['NR'];
     }
 
     public static function schema(): array
