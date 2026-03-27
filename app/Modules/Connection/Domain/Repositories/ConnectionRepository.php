@@ -12,5 +12,7 @@ interface ConnectionRepository
 
     public function findOne(int $int): ConnectionEntity;
 
+    public function findAll(): array;
+
     public function delete(ConnectionEntity $entity): void;
 }

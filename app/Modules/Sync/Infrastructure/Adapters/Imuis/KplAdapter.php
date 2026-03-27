@@ -41,9 +41,9 @@ final class KplAdapter extends AbstractAdapter
         ];
     }
 
-    public function unique(): string
+    public function unique(): array
     {
-        return 'NR';
+        return ['NR'];
     }
 
     public static function schema(): array

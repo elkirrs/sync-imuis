@@ -52,8 +52,7 @@ final class SyncDataTable extends BaseDataTable
             ->select([
                 'sync.*',
             ])
-            ->where('created_at', '>', $date)
-            ;
+            ->where('created_at', '>', $date);
     }
 
     /**

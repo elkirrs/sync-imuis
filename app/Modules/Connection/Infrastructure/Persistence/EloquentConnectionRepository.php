@@ -52,4 +52,12 @@ class EloquentConnectionRepository implements ConnectionReadRepository, Connecti
             ->map(fn ($model) => ConnectionMapper::toEntity($model))
             ->all();
     }
+
+    public function findAll(): array
+    {
+        return $this->model->query()
+            ->get()
+            ->map(fn ($model) => ConnectionMapper::toEntity($model))
+            ->all();
+    }
 }

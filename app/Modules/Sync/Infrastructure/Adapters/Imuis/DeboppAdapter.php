@@ -47,9 +47,9 @@ final class DeboppAdapter extends AbstractAdapter
         ];
     }
 
-    public function unique(): string
+    public function unique(): array
     {
-        return 'FACT';
+        return ['FACT'];
     }
 
     public static function schema(): array

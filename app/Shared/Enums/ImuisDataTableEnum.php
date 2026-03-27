@@ -28,6 +28,9 @@ enum ImuisDataTableEnum: string
     case DOSSIER = 'DOSSIER';
     case VERSL = 'VERSL';
     case DAGBOEK = 'DAGBOEK';
+    case PERIODESALDI = 'PERIODESALDI';
+    case BOE = 'BOE';
+    case MEDEWERKER = 'MEDEWERKER';
 
     public static function List(): array
     {
@@ -54,6 +57,9 @@ enum ImuisDataTableEnum: string
             self::DOSSIER->name => self::DOSSIER->name,
             self::VERSL->name => self::VERSL->name,
             self::DAGBOEK->name => self::DAGBOEK->name,
+            self::BOE->name => self::BOE->name,
+            self::MEDEWERKER->name => self::MEDEWERKER->name,
+            //            self::PERIODESALDI->name => self::PERIODESALDI->name,
         ];
     }
 
@@ -61,7 +67,7 @@ enum ImuisDataTableEnum: string
     {
         return [
             self::DEB->name => 'Debiteur',
-            self::DEBOPP->name => 'Debiteur openstaande posten/Facturen',
+            self::DEBOPP->name => 'Debiteur openstaande posten',
             self::BETCOND->name => 'Betalingsconditie',
             self::BTW->name => 'BTW code',
             self::ART->name => 'Artikelen',
@@ -82,6 +88,9 @@ enum ImuisDataTableEnum: string
             self::DOSSIER->name => 'Dossier / WKR codes',
             self::VERSL->name => 'Verslaglegging',
             self::DAGBOEK->name => 'Dagboeken',
+            self::BOE->name => 'Boekingen',
+            self::MEDEWERKER->name => 'Medewerkers',
+            //            self::PERIODESALDI->name => 'Periodesaldi',
         ];
     }
 

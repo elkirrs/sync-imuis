@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\Authorization;
+use App\Modules\Connection\Interfaces\Console\TenantMigrateCommand;
 use App\Modules\Sync\Interfaces\Console\SyncCommand;
 use App\Modules\Sync\Interfaces\Console\SyncTaskCreateCommand;
 use Illuminate\Foundation\Application;
@@ -26,5 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         SyncCommand::class,
         SyncTaskCreateCommand::class,
+        TenantMigrateCommand::class,
     ])
     ->create();

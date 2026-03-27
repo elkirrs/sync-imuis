@@ -22,7 +22,9 @@ final class BeoorcodeAdapter extends AbstractAdapter
 
     public function fields(): array
     {
-        return ['BLOK', 'BLOKPROFIEL', 'HROW', 'OMSCHR', 'PRG', 'ZKSL'];
+        return [
+            'BLOK', 'BLOKPROFIEL', 'HROW', 'OMSCHR', 'PRG', 'ZKSL',
+        ];
     }
 
     public function filters(): array
@@ -39,9 +41,11 @@ final class BeoorcodeAdapter extends AbstractAdapter
         ];
     }
 
-    public function unique(): string
+    public function unique(): array
     {
-        return 'ZKSL';
+        return [
+            'ZKSL',
+        ];
     }
 
     public static function schema(): array

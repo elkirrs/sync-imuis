@@ -51,9 +51,9 @@ final class OrdrgAdapter extends AbstractAdapter
         ];
     }
 
-    public function unique(): string
+    public function unique(): array
     {
-        return 'ORDNR';
+        return ['ORDNR'];
     }
 
     public static function schema(): array

@@ -29,7 +29,7 @@ abstract class AbstractAdapter implements SchemaDataBase, TableAdapter
 
     abstract public function map(array $row): object;
 
-    abstract public function unique(): string;
+    abstract public function unique(): array;
 
     abstract public static function schema(): array;
 

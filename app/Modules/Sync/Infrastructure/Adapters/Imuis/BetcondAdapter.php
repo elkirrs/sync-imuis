@@ -44,9 +44,11 @@ final class BetcondAdapter extends AbstractAdapter
         ];
     }
 
-    public function unique(): string
+    public function unique(): array
     {
-        return 'ZKSL';
+        return [
+            'ZKSL',
+        ];
     }
 
     public static function schema(): array

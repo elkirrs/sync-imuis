@@ -20,8 +20,24 @@ final readonly class CreateTenantDataBaseService
 
         $dbName = Helper::TenantName($connectionEntity->id->value);
 
+        $this->databaseCreator($dbName);
+
+        $this->migrationRunner($dbName);
+    }
+
+    public function databaseCreator(
+        string $dbName
+    ): void {
+
         $this->databaseCreator->create($dbName);
 
+    }
+
+    public function migrationRunner(
+        string $dbName
+    ): void {
+
         $this->migrationRunner->run($dbName);
+
     }
 }

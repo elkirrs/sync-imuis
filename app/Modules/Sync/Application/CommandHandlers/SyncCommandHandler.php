@@ -62,7 +62,7 @@ final readonly class SyncCommandHandler
         $data = $this->syncRepository->merge(
             targetTable: $table,
             stagingTable: $stagingTable,
-            keys: ['connect_id', strtolower($adaptor->unique())],
+            keys: array_merge(['connect_id'], array_map('strtolower', $adaptor->unique())),
             columns: $columns,
             sourceIdColumn: 'connect_id',
             sourceId: $connect->id->value,

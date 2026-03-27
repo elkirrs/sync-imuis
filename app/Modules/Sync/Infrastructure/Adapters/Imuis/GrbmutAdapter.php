@@ -43,9 +43,9 @@ final class GrbmutAdapter extends AbstractAdapter
         ];
     }
 
-    public function unique(): string
+    public function unique(): array
     {
-        return 'JR';
+        return ['JR'];
     }
 
     public static function schema(): array

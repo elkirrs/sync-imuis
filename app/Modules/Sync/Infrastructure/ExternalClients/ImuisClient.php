@@ -63,14 +63,20 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     public function fetch(QueryDTO $query): iterable
     {
+        [
+            $fields,
+            $operations,
+            $values
+        ] = $this->generateFilters($query->filters);
+
         $dataSet = '
                     <NewDataSet>
                         <Table1>
                              <TABLE>'.$query->table.'</TABLE>
                              <SELECTFIELDS>'.$this->generateFields($query->fields).'</SELECTFIELDS>
-                             <WHEREFIELDS>'.$this->generateFilters($query->filters).'</WHEREFIELDS>
-                             <WHEREOPERATORS>&gt;</WHEREOPERATORS>
-                             <WHEREVALUES>1</WHEREVALUES>
+                             <WHEREFIELDS>'.$fields.'</WHEREFIELDS>
+                             <WHEREOPERATORS>'.$operations.'</WHEREOPERATORS>
+                             <WHEREVALUES>'.$values.'</WHEREVALUES>
                              <ORDERBY>'.$this->generateSorts($query->sorts).'</ORDERBY>
                              <MAXRESULT>0</MAXRESULT>
                              <PAGESIZE>'.$query->pageSize.'</PAGESIZE>
@@ -161,9 +167,26 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     private function generateFilters(
         array $filters,
-    ): string {
+    ): array {
 
-        return implode(';', $filters);
+        $out = [];
+        foreach ($filters as $value) {
+            if (is_array($value)) {
+                $out['fields'][] = $value[0];
+                $out['operators'][] = $value[1];
+                $out['values'][] = $value[2];
+            } else {
+                $out['fields'] = [$value];
+                $out['operators'] = ['&gt;'];
+                $out['values'] = [1];
+            }
+        }
+
+        return [
+            implode(';', $out['fields']),
+            implode(';', $out['operators']),
+            implode(';', $out['values']),
+        ];
     }
 
     private function generateSorts(

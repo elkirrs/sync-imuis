@@ -51,7 +51,7 @@ final class CreAdapter extends AbstractAdapter
         ];
     }
 
-    public function unique(): string
+    public function unique(): array
     {
         return 'NR';
     }
