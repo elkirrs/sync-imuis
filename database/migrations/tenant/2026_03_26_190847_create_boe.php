@@ -1,5 +1,6 @@
 <?php
 
+use App\Shared\Enums\ImuisDataTableEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = ['boe', 'staging_boe'];
+        $tables = [ImuisDataTableEnum::BOE->value, 'staging_'.ImuisDataTableEnum::BOE->value];
 
         foreach ($tables as $tableName) {
 
@@ -69,8 +70,8 @@ return new class extends Migration
             }
         }
 
-        if (Schema::hasTable('boe')) {
-            Schema::table('boe', function (Blueprint $table) {
+        if (Schema::hasTable(ImuisDataTableEnum::BOE->value)) {
+            Schema::table(ImuisDataTableEnum::BOE->value, function (Blueprint $table) {
                 $table->index(['connect_id', 'hash'], 'idx_boe_hash');
             });
         }
@@ -81,7 +82,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('boe');
-        Schema::dropIfExists('staging_boe');
+        Schema::dropIfExists(ImuisDataTableEnum::BOE->value);
+        Schema::dropIfExists('staging_'.ImuisDataTableEnum::BOE->value);
     }
 };

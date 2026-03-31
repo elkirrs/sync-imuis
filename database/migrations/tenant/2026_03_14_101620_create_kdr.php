@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Shared\Enums\ImuisDataTableEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = ['kdr', 'staging_kdr'];
+        $tables = [ImuisDataTableEnum::KDR->value, 'staging_'.ImuisDataTableEnum::KDR->value];
         foreach ($tables as $tableName) {
 
             if (! Schema::hasTable($tableName)) {
@@ -43,8 +44,8 @@ return new class extends Migration
             }
         }
 
-        if (Schema::hasTable('kdr')) {
-            Schema::table('kdr', function (Blueprint $table) {
+        if (Schema::hasTable(ImuisDataTableEnum::KDR->value)) {
+            Schema::table(ImuisDataTableEnum::KDR->value, function (Blueprint $table) {
                 $table->index(['connect_id', 'hash'], 'idx_kdr_hash');
             });
         }
@@ -55,7 +56,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kdr');
-        Schema::dropIfExists('staging_kdr');
+        Schema::dropIfExists(ImuisDataTableEnum::KDR->value);
+        Schema::dropIfExists('staging_'.ImuisDataTableEnum::KDR->value);
     }
 };

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Shared\Enums\ImuisDataTableEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = ['grbmut', 'staging_grbmut'];
+        $tables = [ImuisDataTableEnum::GRBMUT->value, 'staging_'.ImuisDataTableEnum::GRBMUT->value];
         foreach ($tables as $tableName) {
 
             if (! Schema::hasTable($tableName)) {
@@ -52,8 +53,8 @@ return new class extends Migration
             }
         }
 
-        if (Schema::hasTable('grbmut')) {
-            Schema::table('grbmut', function (Blueprint $table) {
+        if (Schema::hasTable(ImuisDataTableEnum::GRBMUT->value)) {
+            Schema::table(ImuisDataTableEnum::GRBMUT->value, function (Blueprint $table) {
                 $table->index(['connect_id', 'hash'], 'idx_grbmut_hash');
             });
         }
@@ -64,7 +65,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grbmut');
-        Schema::dropIfExists('staging_grbmut');
+        Schema::dropIfExists(ImuisDataTableEnum::GRBMUT->value);
+        Schema::dropIfExists('staging_'.ImuisDataTableEnum::GRBMUT->value);
     }
 };

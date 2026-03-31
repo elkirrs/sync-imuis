@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Shared\Enums\ImuisDataTableEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = ['selcode', 'staging_selcode'];
+        $tables = [ImuisDataTableEnum::SELCODE->value, 'staging_'.ImuisDataTableEnum::SELCODE->value];
         foreach ($tables as $tableName) {
 
             if (! Schema::hasTable($tableName)) {
@@ -30,8 +31,8 @@ return new class extends Migration
             }
         }
 
-        if (Schema::hasTable('selcode')) {
-            Schema::table('selcode', function (Blueprint $table) {
+        if (Schema::hasTable(ImuisDataTableEnum::SELCODE->value)) {
+            Schema::table(ImuisDataTableEnum::SELCODE->value, function (Blueprint $table) {
                 $table->index(['connect_id', 'hash'], 'idx_selcode_hash');
             });
         }
@@ -42,7 +43,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('selcode');
-        Schema::dropIfExists('staging_selcode');
+        Schema::dropIfExists(ImuisDataTableEnum::SELCODE->value);
+        Schema::dropIfExists('staging_'.ImuisDataTableEnum::SELCODE->value);
     }
 };

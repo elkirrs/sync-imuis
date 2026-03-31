@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Shared\Enums\ImuisDataTableEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = ['debopp', 'staging_debopp'];
+        $tables = [ImuisDataTableEnum::DEBOPP->value, 'staging_'.ImuisDataTableEnum::DEBOPP->value];
 
         foreach ($tables as $tableName) {
 
@@ -71,8 +72,8 @@ return new class extends Migration
             }
         }
 
-        if (Schema::hasTable('debopp')) {
-            Schema::table('debopp', function (Blueprint $table) {
+        if (Schema::hasTable(ImuisDataTableEnum::DEBOPP->value)) {
+            Schema::table(ImuisDataTableEnum::DEBOPP->value, function (Blueprint $table) {
                 $table->index(['connect_id', 'fact'], 'idx_debopp_hash');
             });
         }
@@ -83,7 +84,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('debopp');
-        Schema::dropIfExists('staging_debopp');
+        Schema::dropIfExists(ImuisDataTableEnum::DEBOPP->value);
+        Schema::dropIfExists('staging_'.ImuisDataTableEnum::DEBOPP->value);
     }
 };
