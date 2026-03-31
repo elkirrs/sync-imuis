@@ -8,11 +8,11 @@ use App\Modules\Connection\Application\Services\CreateTenantDataBaseService;
 use App\Shared\Infrastructure\Bus\QueryBus;
 use Illuminate\Console\Command;
 
-final class TenantMigrateCommand extends Command
+final class TenantMigrateRollbackCommand extends Command
 {
-    protected $signature = 'tenant:migrate';
+    protected $signature = 'tenant:rollback {--step=0}';
 
-    protected $description = 'Run migration for all tenants';
+    protected $description = 'Run rollback migration tenants  {--step=0}';
 
     public function __construct(
         protected QueryBus $queryBus,
@@ -24,6 +24,8 @@ final class TenantMigrateCommand extends Command
 
     public function handle(): void
     {
+        $step = (int) $this->option('step');
+
         $command = new ConnectionsQuery;
         $connections = $this->queryBus->ask($command);
 
@@ -31,7 +33,7 @@ final class TenantMigrateCommand extends Command
 
             $tenant = Helper::TenantName($connection->id);
 
-            $this->dbService->migrationRunner($tenant);
+            $this->dbService->rollbackRunner($tenant, $step);
         }
     }
 }

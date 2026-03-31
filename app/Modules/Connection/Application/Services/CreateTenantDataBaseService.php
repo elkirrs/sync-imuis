@@ -6,12 +6,14 @@ use App\Helpers\Helper;
 use App\Modules\Connection\Domain\Entities\ConnectionEntity;
 use App\Modules\Connection\Infrastructure\Database\DatabaseCreator;
 use App\Modules\Connection\Infrastructure\Database\MigrationRunner;
+use App\Modules\Connection\Infrastructure\Database\RollbackRunner;
 
 final readonly class CreateTenantDataBaseService
 {
     public function __construct(
         private DatabaseCreator $databaseCreator,
-        private MigrationRunner $migrationRunner
+        private MigrationRunner $migrationRunner,
+        private RollbackRunner $rollbackRunner,
     ) {}
 
     public function createForConnection(
@@ -38,6 +40,15 @@ final readonly class CreateTenantDataBaseService
     ): void {
 
         $this->migrationRunner->run($dbName);
+
+    }
+
+    public function rollbackRunner(
+        string $dbName,
+        int $steps = 0,
+    ): void {
+
+        $this->rollbackRunner->run($dbName, $steps);
 
     }
 }
