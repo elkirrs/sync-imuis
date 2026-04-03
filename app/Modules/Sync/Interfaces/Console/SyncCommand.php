@@ -35,5 +35,8 @@ final class SyncCommand extends Command
         Log::info('Run sync tasks by scheduled');
         $command = new SyncTaskScheduleCommand;
         $this->commandBus->dispatch($command);
+
+        $this->info('Run sync for all connections');
+
     }
 }
