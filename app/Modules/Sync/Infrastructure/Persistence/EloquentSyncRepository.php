@@ -167,4 +167,11 @@ final class EloquentSyncRepository implements SyncRepository
 
         return $this;
     }
+
+    public function count(string $table): int
+    {
+        return DB::connection($this->dbConnection)
+            ->table($table)
+            ->count();
+    }
 }

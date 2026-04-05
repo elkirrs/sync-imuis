@@ -14,7 +14,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = [ImuisDataTableEnum::CRE->value, 'staging_'.ImuisDataTableEnum::CRE->value];
+        $tables = [
+            ImuisDataTableEnum::CRE->value,
+            'staging_'.ImuisDataTableEnum::CRE->value,
+        ];
+
         foreach ($tables as $tableName) {
 
             if (! Schema::hasTable($tableName)) {

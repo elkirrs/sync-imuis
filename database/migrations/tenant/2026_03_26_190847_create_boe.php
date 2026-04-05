@@ -12,7 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = [ImuisDataTableEnum::BOE->value, 'staging_'.ImuisDataTableEnum::BOE->value];
+        $tables = [
+            ImuisDataTableEnum::BOE->value,
+            'staging_'.ImuisDataTableEnum::BOE->value,
+        ];
 
         foreach ($tables as $tableName) {
 

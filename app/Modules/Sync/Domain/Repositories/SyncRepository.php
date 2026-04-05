@@ -22,4 +22,6 @@ interface SyncRepository
     ): ?array;
 
     public function delete(string $table, int $sourceId): void;
+
+    public function count(string $table): int;
 }

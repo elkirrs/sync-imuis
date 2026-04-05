@@ -31,6 +31,7 @@ enum ImuisDataTableEnum: string
     case PERIODESALDI = 'PERIODESALDI';
     case BOE = 'BOE';
     case MEDEWERKER = 'MEDEWERKER';
+    case CREOPP = 'CREOPP';
 
     public static function List(): array
     {
@@ -59,6 +60,7 @@ enum ImuisDataTableEnum: string
             self::DAGBOEK->name => self::DAGBOEK->name,
             self::BOE->name => self::BOE->name,
             self::MEDEWERKER->name => self::MEDEWERKER->name,
+            self::CREOPP->name => self::CREOPP->name,
             //            self::PERIODESALDI->name => self::PERIODESALDI->name,
         ];
     }
@@ -90,6 +92,7 @@ enum ImuisDataTableEnum: string
             self::DAGBOEK->name => 'Dagboeken',
             self::BOE->name => 'Boekingen',
             self::MEDEWERKER->name => 'Medewerkers',
+            self::CREOPP->name => 'Crediteur openstaande posten',
             //            self::PERIODESALDI->name => 'Periodesaldi',
         ];
     }

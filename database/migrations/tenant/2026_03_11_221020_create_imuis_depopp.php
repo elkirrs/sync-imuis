@@ -14,7 +14,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = [ImuisDataTableEnum::DEBOPP->value, 'staging_'.ImuisDataTableEnum::DEBOPP->value];
+        $tables = [
+            ImuisDataTableEnum::DEBOPP->value,
+            'staging_'.ImuisDataTableEnum::DEBOPP->value,
+        ];
 
         foreach ($tables as $tableName) {
 

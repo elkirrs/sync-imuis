@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Sync\Application\CommandHandlers;
 
+use App\Modules\Connection\Domain\Entities\ConnectionEntity;
 use App\Modules\Connection\Domain\Repositories\ConnectionReadRepository;
 use App\Modules\Sync\Application\Commands\SyncCommand;
 use App\Modules\Sync\Domain\Repositories\SyncRepository;
+use App\Modules\Sync\Infrastructure\Contracts\TableAdapter;
 use App\Modules\Sync\Infrastructure\Factories\TableAdaptorFactory;
 use App\Shared\Enums\ImuisDataTableEnum;
 use App\Shared\Infrastructure\Connections\IntegrationConnection;
@@ -47,15 +49,32 @@ final readonly class SyncCommandHandler
 
         })();
 
+        $this->syncRepository->setConnection('tenant');
+
+        // new data will be able added two ways: throughMerge and throughUpsert
+        $data = $this->throughUpsert(
+            command: $command,
+            rows: $rows,
+            adaptor: $adaptor,
+        );
+
+        cache()->add('sync:result:'.$command->uuid, json_encode($data));
+
+    }
+
+    private function throughMerge(
+        SyncCommand $command,
+        ConnectionEntity $connect,
+        iterable $rows,
+        TableAdapter $adaptor
+
+    ): array {
         $table = ImuisDataTableEnum::fromName($command->table)->value;
         $stagingTable = 'staging_'.$table;
-
-        $this->syncRepository->setConnection('tenant');
 
         $this->syncRepository->delete($stagingTable, $connect->id->value);
 
         $this->syncRepository->bulkInsert($rows, $stagingTable);
-
         $columns = array_map('strtolower', $adaptor->query()->fields);
         $columns[] = 'connect_id';
         $columns[] = 'hash';
@@ -71,9 +90,33 @@ final readonly class SyncCommandHandler
                     sourceId: $connect->id->value,
                 ));
 
-        cache()->add('sync:result:'.$command->uuid, json_encode($data));
-
         $this->syncRepository->delete($stagingTable, $connect->id->value);
 
+        return $data;
+    }
+
+    private function throughUpsert(
+        SyncCommand $command,
+        iterable $rows,
+        TableAdapter $adaptor
+    ): array {
+        $table = ImuisDataTableEnum::fromName($command->table)->value;
+
+        $this->syncRepository->setConnection('tenant');
+
+        array_map('strtolower', $adaptor->unique())
+            |> (fn ($x) => array_merge(['connect_id'], $x))
+            |> (fn ($x) => $this->syncRepository->bulkUpsert(
+                rows: $rows,
+                tableName: $table,
+                uniqueBy: $x
+            ));
+
+        $countRows = $this->syncRepository->count($table);
+
+        return [
+            'table' => $command->table,
+            'count' => $countRows,
+        ];
     }
 }
