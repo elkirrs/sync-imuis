@@ -16,7 +16,7 @@ class TableAdaptorFactory
         ExternalClient $client
     ): TableAdapter {
 
-        $table = ImuisDataTableEnum::from($table)->name;
+        $table = ImuisDataTableEnum::fromName($table)->name;
 
         $clientName = $client->clientName();
 

@@ -8,6 +8,7 @@ use App\Modules\Connection\Domain\Repositories\ConnectionReadRepository;
 use App\Modules\Sync\Application\Commands\SyncCommand;
 use App\Modules\Sync\Domain\Repositories\SyncRepository;
 use App\Modules\Sync\Infrastructure\Factories\TableAdaptorFactory;
+use App\Shared\Enums\ImuisDataTableEnum;
 use App\Shared\Infrastructure\Connections\IntegrationConnection;
 use App\Shared\Infrastructure\Factories\ClientFactory;
 
@@ -46,7 +47,7 @@ final readonly class SyncCommandHandler
 
         })();
 
-        $table = strtolower($command->table);
+        $table = ImuisDataTableEnum::fromName($command->table)->value;
         $stagingTable = 'staging_'.$table;
 
         $this->syncRepository->setConnection('tenant');
@@ -59,14 +60,16 @@ final readonly class SyncCommandHandler
         $columns[] = 'connect_id';
         $columns[] = 'hash';
 
-        $data = $this->syncRepository->merge(
-            targetTable: $table,
-            stagingTable: $stagingTable,
-            keys: array_merge(['connect_id'], array_map('strtolower', $adaptor->unique())),
-            columns: $columns,
-            sourceIdColumn: 'connect_id',
-            sourceId: $connect->id->value,
-        );
+        $data = array_map('strtolower', $adaptor->unique())
+                |> (fn ($x) => array_merge(['connect_id'], $x))
+                |> (fn ($x) => $this->syncRepository->merge(
+                    targetTable: $table,
+                    stagingTable: $stagingTable,
+                    keys: $x,
+                    columns: $columns,
+                    sourceIdColumn: 'connect_id',
+                    sourceId: $connect->id->value,
+                ));
 
         cache()->add('sync:result:'.$command->uuid, json_encode($data));
 

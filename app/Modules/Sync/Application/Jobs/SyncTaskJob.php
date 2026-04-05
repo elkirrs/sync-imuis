@@ -60,28 +60,28 @@ class SyncTaskJob implements ShouldQueue
         $tenantDB = Helper::TenantName($clientId);
         $tenant->connect($tenantDB);
 
-        if (! $isLock) {
-            $runningUuid = $this->cache->getValue($lockKey);
-            if ($runningUuid === $this->syncTaskDTO->uuid) {
-                return;
-            }
-            $syncTaskCommand = new SyncTaskStatusCommand(
-                $this->syncTaskDTO->uuid,
-                SyncTaskStatusEnum::Duplicate->value,
-                new ReasonDTO(
-                    msg: 'Duplicate task is already running',
-                    status: SyncTaskStatusEnum::Duplicate->value,
-                    details: "Currently running UUID: {$runningUuid}"
-                )
-            );
-            $commandBus->dispatch($syncTaskCommand);
-            Log::info('SyncTaskJob', [
-                'msg' => "Duplicate  for {$clientId}:{$table}, running UUID: {$runningUuid}",
-                'status' => SyncTaskStatusEnum::Duplicate->toString(),
-            ]);
-
-            return;
-        }
+        //        if (! $isLock) {
+        //            $runningUuid = $this->cache->getValue($lockKey);
+        //            if ($runningUuid === $this->syncTaskDTO->uuid) {
+        //                return;
+        //            }
+        //            $syncTaskCommand = new SyncTaskStatusCommand(
+        //                $this->syncTaskDTO->uuid,
+        //                SyncTaskStatusEnum::Duplicate->value,
+        //                new ReasonDTO(
+        //                    msg: 'Duplicate task is already running',
+        //                    status: SyncTaskStatusEnum::Duplicate->value,
+        //                    details: "Currently running UUID: {$runningUuid}"
+        //                )
+        //            );
+        //            $commandBus->dispatch($syncTaskCommand);
+        //            Log::info('SyncTaskJob', [
+        //                'msg' => "Duplicate  for {$clientId}:{$table}, running UUID: {$runningUuid}",
+        //                'status' => SyncTaskStatusEnum::Duplicate->toString(),
+        //            ]);
+        //
+        //            return;
+        //        }
 
         $syncTaskCommand = new SyncTaskStatusCommand(
             $this->syncTaskDTO->uuid,

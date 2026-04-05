@@ -100,4 +100,10 @@ enum ImuisDataTableEnum: string
 
         return implode(',', $list);
     }
+
+    public static function fromName(string $name): ?self
+    {
+        return array_find(self::cases(), fn ($case) => $case->name === $name);
+
+    }
 }
