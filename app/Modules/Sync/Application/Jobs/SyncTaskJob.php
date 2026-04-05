@@ -116,6 +116,8 @@ class SyncTaskJob implements ShouldQueue
 
         } catch (Throwable $th) {
             Log::error('SyncTaskJob', Helper::LogErrorData($th));
+            $this->cache->release($lockKey);
+            $this->cache->release($resultKey);
 
             $syncTaskCommand = new SyncTaskStatusCommand(
                 $this->syncTaskDTO->uuid,
