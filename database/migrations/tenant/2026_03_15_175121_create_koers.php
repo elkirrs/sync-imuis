@@ -28,7 +28,7 @@ return new class extends Migration
                     $table->string('hash');
 
                     $table->boolean('blokprofiel')->nullable();
-                    $table->date('datvan')->nullable();
+                    $table->string('datvan')->nullable();
                     $table->decimal('koers', 13, 6); // verplicht
                     $table->decimal('koersdefval', 13, 6); // verplicht
                     $table->bigInteger('nr')->nullable(); // primary key part

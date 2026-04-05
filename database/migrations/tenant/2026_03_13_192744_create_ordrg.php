@@ -46,11 +46,11 @@ return new class extends Migration
                     $table->boolean('blok')->nullable();
                     $table->string('btwsrt', 1)->nullable();
                     $table->integer('colli')->nullable();
-                    $table->date('dat')->nullable();
-                    $table->dateTime('datfact')->nullable();
-                    $table->date('datlev')->nullable();
+                    $table->string('dat')->nullable();
+                    $table->string('datfact')->nullable();
+                    $table->string('datlev')->nullable();
                     $table->string('datlevgewijz', 1)->nullable();
-                    $table->dateTime('datordbev')->nullable();
+                    $table->string('datordbev')->nullable();
                     $table->integer('deb')->nullable();
                     $table->string('eenh', 20)->nullable();
                     $table->integer('eenhprs')->nullable();

@@ -49,7 +49,7 @@ return new class extends Migration
                     $table->unsignedTinyInteger('btw')->nullable();
                     $table->unsignedBigInteger('cre')->nullable();
                     $table->unsignedInteger('dagb'); // PK
-                    $table->date('dat');
+                    $table->string('dat');
                     $table->unsignedBigInteger('deb')->nullable();
                     $table->string('dossier')->nullable();
                     $table->string('fact')->nullable();

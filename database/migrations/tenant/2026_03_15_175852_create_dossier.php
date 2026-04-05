@@ -30,8 +30,8 @@ return new class extends Migration
                     $table->boolean('blok')->nullable();
                     $table->boolean('blokhandm')->nullable();
                     $table->boolean('blokprofiel')->nullable();
-                    $table->date('datbegin')->nullable();
-                    $table->date('dateind')->nullable();
+                    $table->string('datbegin')->nullable();
+                    $table->string('dateind')->nullable();
                     $table->integer('kdr')->nullable();
                     $table->integer('kpl')->nullable();
                     $table->string('locatie', 250)->nullable();

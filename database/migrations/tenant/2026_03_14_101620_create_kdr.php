@@ -28,8 +28,8 @@ return new class extends Migration
                     $table->string('hash');
 
                     $table->boolean('blok')->nullable();
-                    $table->date('dataanvang')->nullable();
-                    $table->date('datgereed')->nullable();
+                    $table->string('dataanvang')->nullable();
+                    $table->string('datgereed')->nullable();
                     $table->integer('deb')->nullable();
                     $table->string('kdrublinl', 20)->nullable();
                     $table->string('medewdec', 20)->nullable();

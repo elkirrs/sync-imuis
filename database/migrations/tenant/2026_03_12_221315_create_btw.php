@@ -36,7 +36,7 @@ return new class extends Migration
                     $table->string('btwber', 1)->nullable();
                     $table->string('btwict', 1)->nullable();
                     $table->string('btwpl', 1)->nullable();
-                    $table->date('datingang')->nullable();
+                    $table->string('datingang')->nullable();
                     $table->string('formgrp', 2)->nullable();
                     $table->integer('grb')->nullable();
                     $table->boolean('loonwerk')->nullable();

@@ -43,9 +43,9 @@ return new class extends Migration
                     $table->unsignedBigInteger('cre');
                     $table->unsignedBigInteger('creditnotacre')->nullable();
                     $table->string('creditnotafact')->nullable();
-                    $table->date('dat')->nullable();
-                    $table->date('datlstbet')->nullable();
-                    $table->date('datverv')->nullable();
+                    $table->string('dat')->nullable();
+                    $table->string('datlstbet')->nullable();
+                    $table->string('datverv')->nullable();
                     $table->string('fact');
                     $table->boolean('fiat')->nullable();
                     $table->string('fiatinkoop')->nullable();

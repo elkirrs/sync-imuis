@@ -37,7 +37,7 @@ return new class extends Migration
                     $table->string('boekstuk', 20)->nullable();
                     $table->bigInteger('cre')->nullable();
                     $table->bigInteger('dagb')->nullable(); // primary key
-                    $table->date('dat')->nullable();
+                    $table->string('dat')->nullable();
                     $table->bigInteger('deb')->nullable();
                     $table->string('debcre', 1)->nullable();
                     $table->string('dossier', 20)->nullable();

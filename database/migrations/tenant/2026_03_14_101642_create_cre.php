@@ -34,7 +34,7 @@ return new class extends Migration
                     $table->string('betkenmverpl', 1)->nullable();
                     $table->string('betselafdruk', 1)->nullable();
                     $table->boolean('blok')->default(false);
-                    $table->date('blokinkva')->nullable();
+                    $table->string('blokinkva')->nullable();
                     $table->string('bnkbnkrek', 11)->nullable();
                     $table->string('bnkgrek', 11)->nullable();
                     $table->string('bnkgiro', 11)->nullable();
@@ -47,13 +47,13 @@ return new class extends Migration
                     $table->string('btwstatnaam', 100)->nullable();
                     $table->string('certsleutel', 20)->nullable();
                     $table->integer('dagbink')->nullable();
-                    $table->date('dataangem')->nullable();
-                    $table->date('datbtwnr')->nullable();
-                    $table->date('datkrlimtm')->nullable();
-                    $table->date('datkrlimvan')->nullable();
-                    $table->date('datkvkuittr')->nullable();
-                    $table->date('datlstbet')->nullable(); // niet toegankelijk
-                    $table->date('datlstfact')->nullable(); // niet toegankelijk
+                    $table->string('dataangem')->nullable();
+                    $table->string('datbtwnr')->nullable();
+                    $table->string('datkrlimtm')->nullable();
+                    $table->string('datkrlimvan')->nullable();
+                    $table->string('datkvkuittr')->nullable();
+                    $table->string('datlstbet')->nullable(); // niet toegankelijk
+                    $table->string('datlstfact')->nullable(); // niet toegankelijk
                     $table->integer('deb')->nullable();
                     $table->string('econnectid', 50)->nullable();
                     $table->string('email', 64)->nullable();

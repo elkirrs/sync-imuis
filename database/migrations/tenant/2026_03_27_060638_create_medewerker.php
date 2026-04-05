@@ -31,12 +31,12 @@ return new class extends Migration
                     $table->boolean('blok')->nullable();
                     $table->string('burgst')->nullable();
                     $table->integer('cre')->nullable();
-                    $table->date('datafwtm')->nullable();
-                    $table->date('datafwvan')->nullable();
-                    $table->date('dateindcontr')->nullable();
-                    $table->date('datgeb')->nullable();
-                    $table->date('datindienst')->nullable();
-                    $table->date('datuitdienst')->nullable();
+                    $table->string('datafwtm')->nullable();
+                    $table->string('datafwvan')->nullable();
+                    $table->string('dateindcontr')->nullable();
+                    $table->string('datgeb')->nullable();
+                    $table->string('datindienst')->nullable();
+                    $table->string('datuitdienst')->nullable();
                     $table->string('email')->nullable();
                     $table->string('geslacht')->nullable();
                     $table->boolean('isbudh')->nullable();

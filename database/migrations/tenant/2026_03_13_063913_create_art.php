@@ -55,7 +55,7 @@ return new class extends Migration
                     $table->string('btw', 1)->nullable();
                     $table->string('cat', 20)->nullable();
                     $table->string('categorie', 1)->nullable();
-                    $table->date('dataangem')->nullable();
+                    $table->string('dataangem')->nullable();
                     $table->decimal('dikte', 14, 4)->nullable();
                     $table->decimal('doorsnee', 14, 4)->nullable();
                     $table->string('ean', 20)->nullable();

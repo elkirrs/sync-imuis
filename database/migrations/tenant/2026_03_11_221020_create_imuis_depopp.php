@@ -51,11 +51,11 @@ return new class extends Migration
                     $table->string('bnkrek', 38)->nullable();           // Bankrekening
                     $table->integer('creditnotadeb')->nullable();        // Hoort bij factuur:debiteur
                     $table->string('creditnotafact', 20)->nullable();    // Hoort bij factuur:factuur
-                    $table->date('dat')->nullable();                     // Datum (niet toegankelijk)
-                    $table->date('datlstaanm')->nullable();               // Datum laatste aanmaning
-                    $table->date('datlstbet')->nullable();              // Datum laatste betaling (niet toegankelijk)
-                    $table->date('datuitv')->nullable();                 // Gewenste verwerkingsdatum incasso
-                    $table->date('datverv')->nullable();                // Vervaldatum
+                    $table->string('dat')->nullable();                     // Datum (niet toegankelijk)
+                    $table->string('datlstaanm')->nullable();               // Datum laatste aanmaning
+                    $table->string('datlstbet')->nullable();              // Datum laatste betaling (niet toegankelijk)
+                    $table->string('datuitv')->nullable();                 // Gewenste verwerkingsdatum incasso
+                    $table->string('datverv')->nullable();                // Vervaldatum
                     $table->integer('deb');                              // Debiteur (primary key, niet toegankelijk, verplicht)
                     $table->integer('deborder')->nullable();            // Orderdebiteur
                     $table->string('fact', 20);                          // Factuur (primary key, niet toegankelijk, verplicht)

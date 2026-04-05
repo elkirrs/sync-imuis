@@ -36,8 +36,8 @@ return new class extends Migration
                     $table->integer('betaler')->nullable();
                     $table->integer('betcond')->nullable();
                     $table->boolean('blok')->nullable();
-                    $table->date('blokdeclva')->nullable();
-                    $table->date('blokvrkva')->nullable();
+                    $table->string('blokdeclva')->nullable();
+                    $table->string('blokvrkva')->nullable();
                     $table->string('bnkbnkrek', 11)->nullable();
                     $table->string('bnkbnkrek2', 11)->nullable();
                     $table->string('bnkgiro', 11)->nullable();
@@ -51,16 +51,16 @@ return new class extends Migration
                     $table->string('bnksrtinc', 1)->nullable();     // Banksoort incasso
                     $table->string('btwnr', 14)->nullable();      // BTW-nummer
                     $table->string('btwpl', 1)->nullable();                     // BTW-plichtig, verplicht
-                    $table->date('datbtwnr')->nullable();         // BTW verificatiedatum
-                    $table->date('datklantaf')->nullable();       // Klant af
-                    $table->date('datklantsinds')->nullable();    // Klant sinds
-                    $table->date('datkrlimtm')->nullable();       // Einddatum kredietlimiet
-                    $table->date('datkrlimvan')->nullable();      // Begindatum kredietlimiet
-                    $table->date('datkvkuittr')->nullable();      // Kvk datum uittreksel
-                    $table->date('datlstaanm')->nullable();       // Laatste aanmaning (niet toegankelijk)
-                    $table->date('datlstbet')->nullable();        // Laatste betaling (niet toegankelijk)
-                    $table->date('datlstfact')->nullable();       // Laatste factuur (niet toegankelijk)
-                    $table->date('datoprichting')->nullable();    // Oprichtingsdatum/geboortedatum
+                    $table->string('datbtwnr')->nullable();         // BTW verificatiedatum
+                    $table->string('datklantaf')->nullable();       // Klant af
+                    $table->string('datklantsinds')->nullable();    // Klant sinds
+                    $table->string('datkrlimtm')->nullable();       // Einddatum kredietlimiet
+                    $table->string('datkrlimvan')->nullable();      // Begindatum kredietlimiet
+                    $table->string('datkvkuittr')->nullable();      // Kvk datum uittreksel
+                    $table->string('datlstaanm')->nullable();       // Laatste aanmaning (niet toegankelijk)
+                    $table->string('datlstbet')->nullable();        // Laatste betaling (niet toegankelijk)
+                    $table->string('datlstfact')->nullable();       // Laatste factuur (niet toegankelijk)
+                    $table->string('datoprichting')->nullable();    // Oprichtingsdatum/geboortedatum
                     $table->string('decbudverpl', 1)->nullable();  // Gebruik declaratiebudget verplicht
                     $table->string('decltoel', 1)->nullable();     // Afdrukken toelichting bij declaratie
                     $table->bigInteger('eannr')->nullable();      // EAN nummer
