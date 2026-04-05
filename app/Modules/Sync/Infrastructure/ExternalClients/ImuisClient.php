@@ -130,10 +130,6 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
                         if ($attempt >= $maxRetries) {
 
-                            if ($page === 1) {
-                                return;
-                            }
-
                             throw new RuntimeException(
                                 "Failed to fetch page {$page} after {$maxRetries} attempts. Process stopped. ".$th->getMessage()
                             );
