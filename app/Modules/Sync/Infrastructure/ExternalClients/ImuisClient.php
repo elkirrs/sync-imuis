@@ -129,12 +129,19 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         Log::warning("Page {$page} failed attempt {$attempt}: ", Helper::LogErrorData($th));
 
                         if ($attempt >= $maxRetries) {
+
+                            if ($page === 1) {
+                                return;
+                            }
+
                             throw new RuntimeException(
                                 "Failed to fetch page {$page} after {$maxRetries} attempts. Process stopped. ".$th->getMessage()
                             );
                         }
 
-                        sleep(min(pow(2, $attempt), 180));
+                        pow(2, $attempt)
+                            |> (fn ($x) => min($x, 180))
+                            |> sleep(...);
                     }
                 }
 
