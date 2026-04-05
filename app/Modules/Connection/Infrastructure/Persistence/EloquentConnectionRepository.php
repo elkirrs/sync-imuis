@@ -48,6 +48,7 @@ class EloquentConnectionRepository implements ConnectionReadRepository, Connecti
     {
         return $this->model->query()
             ->where('is_active', '=', true)
+            ->where('is_created_db', '=', true)
             ->get()
             ->map(fn ($model) => ConnectionMapper::toEntity($model))
             ->all();
