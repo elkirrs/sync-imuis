@@ -99,7 +99,7 @@ enum ImuisDataTableEnum: string
 
     public static function toStringList(): string
     {
-        $list = array_map(fn ($item) => $item->value, self::cases());
+        $list = array_map(fn ($item) => $item->name, self::cases());
 
         return implode(',', $list);
     }

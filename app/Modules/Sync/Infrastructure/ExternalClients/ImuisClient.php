@@ -114,6 +114,15 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                             throw new RuntimeException("Empty data on page {$page}");
                         }
 
+                        $oneRow = array_first($response['DATA'])
+                            |> (fn($x) => is_array($x))
+                            |> (fn($x) => empty($x));
+
+                        if ($oneRow) {
+                            yield $response['DATA'];
+                            return;
+                        }
+
                         foreach ($response['DATA'] as $row) {
                             yield $row;
                         }
