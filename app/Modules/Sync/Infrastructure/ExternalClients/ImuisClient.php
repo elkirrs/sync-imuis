@@ -9,9 +9,11 @@ use App\Modules\Sync\Domain\DTO\QueryDTO;
 use App\Shared\Domain\Contracts\ExternalClient;
 use App\Shared\Infrastructure\ExternalClient\AbstractExternalClient;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
 use RuntimeException;
 use Throwable;
+use function is_array;
 
 final class ImuisClient extends AbstractExternalClient implements ExternalClient
 {
@@ -85,16 +87,22 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                     </NewDataSet>
                     ';
 
-        return $this->paginate('GETSTAMTABELRECORDS', $dataSet);
+        return $this->paginate(
+            endpoint: 'GETSTAMTABELRECORDS',
+            opts: $dataSet,
+            maxRetries: 5,
+            table: $query->table
+        );
     }
 
     private function paginate(
         string $endpoint,
         string $opts,
-        int $maxRetries = 5
+        int $maxRetries = 5,
+        string $table = '',
     ): LazyCollection {
 
-        return LazyCollection::make(function () use ($endpoint, $opts, $maxRetries) {
+        return LazyCollection::make(function () use ($endpoint, $opts, $maxRetries, $table) {
 
             $page = 1;
             $totalPages = null;
@@ -112,6 +120,11 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                             unset($response);
                             Log::warning("Page {$page} returned empty data");
                             throw new RuntimeException("Empty data on page {$page}");
+                        }
+
+                        if ($page <= 5) {
+                            $path = "{$table}/page_{$page}.json";
+                            Storage::disk('local')->put($path, json_encode($response));
                         }
 
                         $oneRow = array_first($response['DATA'])
