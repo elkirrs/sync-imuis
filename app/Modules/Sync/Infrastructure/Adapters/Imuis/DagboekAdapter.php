@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\DagboekMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/beschikbare-velden-tabel-dagboek-dagboeken/
 final class DagboekAdapter extends AbstractAdapter
 {
     public function map(array $row): object

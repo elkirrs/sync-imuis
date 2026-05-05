@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\OrdrgMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// http://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-ordrg-verkooporderregels/
 final class OrdrgAdapter extends AbstractAdapter
 {
     public function map(array $row): object
@@ -53,7 +54,7 @@ final class OrdrgAdapter extends AbstractAdapter
 
     public function unique(): array
     {
-        return ['ORDNR'];
+        return ['ORDNR', 'RG'];
     }
 
     public static function schema(): array

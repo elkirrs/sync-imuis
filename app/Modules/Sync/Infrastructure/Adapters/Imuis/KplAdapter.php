@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\KplMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/beschikbare-velden-tabel-kpl-kostenplaatsen/
 final class KplAdapter extends AbstractAdapter
 {
     public function map(array $row): object

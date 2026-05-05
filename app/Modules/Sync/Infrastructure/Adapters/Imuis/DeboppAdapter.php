@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\DeboppMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// http://apps.imuisonline.com/muis-apps/debopp/
 final class DeboppAdapter extends AbstractAdapter
 {
     public function map(array $row): object
@@ -49,7 +50,7 @@ final class DeboppAdapter extends AbstractAdapter
 
     public function unique(): array
     {
-        return ['FACT'];
+        return ['DEB', 'FACT'];
     }
 
     public static function schema(): array

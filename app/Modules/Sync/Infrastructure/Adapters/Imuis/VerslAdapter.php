@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\VerslkMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-versl-verslaglegging/
 final class VerslAdapter extends AbstractAdapter
 {
     public function map(array $row): object

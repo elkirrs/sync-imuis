@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\LandMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// http://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-land-landen/
 final class LandAdapter extends AbstractAdapter
 {
     public function map(array $row): object

@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\BoeMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/beschikbare-velden-boe-boekingen/
 final class BoeAdapter extends AbstractAdapter
 {
     public function map(array $row): object
@@ -49,7 +50,7 @@ final class BoeAdapter extends AbstractAdapter
     public function unique(): array
     {
         return [
-            'JR', 'PN',
+            'DAGB', 'JR', 'PN', 'RG'
         ];
     }
 

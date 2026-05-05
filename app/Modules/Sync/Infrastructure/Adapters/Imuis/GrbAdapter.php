@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\GrbMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/beschikbare-velden-tabel-grb-grootboekrekeningen/
 final class GrbAdapter extends AbstractAdapter
 {
     public function map(array $row): object

@@ -13,4 +13,6 @@ interface TableAdapter
     public function map(array $row): object;
 
     public function unique(): array;
+
+    public function fields(): array;
 }

@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\BetcondMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/beschikbare-velden-tabel-betcond-betalingsconditie/
 final class BetcondAdapter extends AbstractAdapter
 {
     public function map(array $row): object
@@ -40,14 +41,14 @@ final class BetcondAdapter extends AbstractAdapter
     public function sorts(): array
     {
         return [
-            'ZKSL',
+            'NR',
         ];
     }
 
     public function unique(): array
     {
         return [
-            'ZKSL',
+            'NR',
         ];
     }
 

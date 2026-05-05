@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\BtwMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// http://apps.imuisonline.com/muis-apps/beschikbare-velden-btw-btw-code/
 final class BtwAdapter extends AbstractAdapter
 {
     public function map(array $row): object

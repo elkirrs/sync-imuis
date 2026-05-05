@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\KoersMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// http://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-koers-valutakoersen/
 final class KoersAdapter extends AbstractAdapter
 {
     public function map(array $row): object
@@ -41,7 +42,7 @@ final class KoersAdapter extends AbstractAdapter
 
     public function unique(): array
     {
-        return ['NR'];
+        return ['NR', 'VAL'];
     }
 
     public static function schema(): array

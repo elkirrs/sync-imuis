@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\TaalMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-taal/
 final class TaalAdapter extends AbstractAdapter
 {
     public function map(array $row): object

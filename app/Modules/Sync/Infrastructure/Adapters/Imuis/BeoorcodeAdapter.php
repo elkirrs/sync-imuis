@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\BeoorcodeMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/beschikbare-velden-van-de-tabel-beoordelingscode-beoorcode/
 final class BeoorcodeAdapter extends AbstractAdapter
 {
     public function map(array $row): object

@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\CreMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// http://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-cre-crediteuren/
 final class CreAdapter extends AbstractAdapter
 {
     public function map(array $row): object
@@ -53,7 +54,7 @@ final class CreAdapter extends AbstractAdapter
 
     public function unique(): array
     {
-        return ['NR'];
+        return ['ZKSL'];
     }
 
     public static function schema(): array

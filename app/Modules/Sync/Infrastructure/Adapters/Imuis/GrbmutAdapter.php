@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\GrbmutMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-grbmut-grootboekmutaties/
 final class GrbmutAdapter extends AbstractAdapter
 {
     public function map(array $row): object
@@ -45,7 +46,7 @@ final class GrbmutAdapter extends AbstractAdapter
 
     public function unique(): array
     {
-        return ['JR'];
+        return ['JR', 'DAGB', 'PN', 'RG', 'SRT'];
     }
 
     public static function schema(): array

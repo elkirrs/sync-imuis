@@ -8,6 +8,7 @@ use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\ArtgrpMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
 
+// https://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-artgrp-artikelgroepen/
 final class ArtgrpAdapter extends AbstractAdapter
 {
     public function map(array $row): object

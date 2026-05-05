@@ -13,6 +13,7 @@ use App\Modules\Sync\Infrastructure\Factories\TableAdaptorFactory;
 use App\Shared\Enums\ImuisDataTableEnum;
 use App\Shared\Infrastructure\Connections\IntegrationConnection;
 use App\Shared\Infrastructure\Factories\ClientFactory;
+use function array_map;
 
 final readonly class SyncCommandHandler
 {

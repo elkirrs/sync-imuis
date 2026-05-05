@@ -130,8 +130,10 @@ class SyncTaskEntity
 
     public function failed(): void
     {
+        $currentDateTime = date('Y-m-d H:i:s');
         $this->status = new Status(SyncTaskStatusEnum::Failed->value);
-        $this->updatedAt = new DateTime(date('Y-m-d H:i:s'));
+        $this->updatedAt = new DateTime($currentDateTime);
+        $this->finishedAt = new DateTime($currentDateTime);
     }
 
     public function status(): Status
