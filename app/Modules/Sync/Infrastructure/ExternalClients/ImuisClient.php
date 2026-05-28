@@ -62,9 +62,9 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
     {
         $key = "sync:login:{$this->partnerKey}";
         $this->sessionId = $this->cache->getValue(key: $key);
-        if (empty($this->sessionId)) {
+        if (empty($this->sessionId) || $this->sessionId === null) {
             $result = $this->imuisCall('LOGIN');
-            $this->sessionId = $result['SESSION']['SESSIONID'];
+            $this->sessionId = $result['SESSION']['SESSIONID'] ?? '';
             $this->cache->acquire(
                 key: $key,
                 value: $this->sessionId,
@@ -189,7 +189,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     public function getSessionId(): string
     {
-        return $this->sessionId;
+        return $this->sessionId ?? '';
     }
 
     private function generateFields(
