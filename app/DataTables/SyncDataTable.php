@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Facades\Html;
+use App\Helpers\Helper;
 use App\Models\Sync;
 use App\Modules\Sync\Enums\SyncTaskStatusEnum;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
@@ -38,6 +39,35 @@ final class SyncDataTable extends BaseDataTable
             ->editColumn('finished_at', function ($query) {
                 return $query->finished_at;
             })
+            ->orderColumn('name', function ($query, $order) {
+                $query->orderByRaw("CASE WHEN name IS NULL THEN 1 ELSE 0 END, name $order");
+            })
+            ->orderColumn('available_at', function ($query, $keyword) {
+                $query->whereRaw("CONVERT(date, available_at) LIKE ?", ["%{$keyword}%"]);
+            })
+            ->orderColumn('created_at', function ($query, $keyword) {
+                $query->whereRaw("CONVERT(date, created_at) LIKE ?", ["%{$keyword}%"]);
+            })
+            ->orderColumn('finished_at', function ($query, $keyword) {
+                $query->whereRaw("CONVERT(date, finished_at) LIKE ?", ["%{$keyword}%"]);
+            })
+            ->filter(function ($query) {
+                $search = request('search.value');
+                $search = Helper::escapeLike($search);
+
+                if (!$search) {
+                    return;
+                }
+
+                $query->where(function ($q) use ($search) {
+
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('uuid', 'like', "%{$search}%")
+                        ->orWhereRaw("CONVERT(VARCHAR(19), created_at, 120) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("CONVERT(VARCHAR(19), available_at, 120) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("CONVERT(VARCHAR(19), finished_at, 120) LIKE ?", ["%{$search}%"]);
+                });
+            })
             ->rawColumns(['actions']);
     }
 
@@ -67,8 +97,8 @@ final class SyncDataTable extends BaseDataTable
                 ->orderable(true),
             Column::make('name')
                 ->title(__('Name'))
-                ->searchable(false)
-                ->orderable(false),
+                ->searchable(true)
+                ->orderable(true),
 
             Column::make('status')
                 ->title(__('Status'))
@@ -82,17 +112,17 @@ final class SyncDataTable extends BaseDataTable
 
             Column::make('available_at')
                 ->title(__('Available At'))
-                ->searchable(false)
+                ->searchable(true)
                 ->orderable(true),
 
             Column::make('created_at')
                 ->title(__('Created At'))
-                ->searchable(false)
+                ->searchable(true)
                 ->orderable(true),
 
             Column::make('finished_at')
                 ->title(__('Finished At'))
-                ->searchable(false)
+                ->searchable(true)
                 ->orderable(true),
 
             Column::make('actions')
@@ -111,8 +141,7 @@ final class SyncDataTable extends BaseDataTable
             SyncTaskStatusEnum::Failed->value,
             SyncTaskStatusEnum::Finished->value,
             SyncTaskStatusEnum::Duplicate->value,
-        ])
-        ) {
+        ])) {
             $actions = Html::Link(
                 route('sync.details', ['uuid' => $query->uuid]),
                 '<i class="bi bi-eye md-icon"></i>',

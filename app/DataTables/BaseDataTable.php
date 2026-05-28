@@ -17,7 +17,7 @@ abstract class BaseDataTable extends DataTable
         public bool $paging = true,
         public array $lengthMenu = [25, 50, 100, 250],
         public bool $serverSide = true,
-        public bool $searching = false,
+        public bool $searching = true,
         public string|array $ajaxData = []
     ) {
         parent::__construct();
@@ -46,7 +46,7 @@ abstract class BaseDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return class_basename($this).'_'.date('Ymd');
+        return class_basename($this) . '_' . date('Ymd');
     }
 
     private function initFooter(): string

@@ -38,6 +38,16 @@ final readonly class Helper
         int|string $name,
         string $glue = '_'
     ): string {
-        return config('tenant.prefix').$glue.$name;
+        return config('tenant.prefix') . $glue . $name;
+    }
+
+    public static function escapeLike(
+        ?string $value
+    ): string {
+        return str_replace(
+            ['\\', '%', '_'],
+            ['\\\\', '\%', '\_'],
+            $value ?? ''
+        );
     }
 }
