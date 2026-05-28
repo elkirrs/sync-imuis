@@ -42,14 +42,23 @@ final class SyncDataTable extends BaseDataTable
             ->orderColumn('name', function ($query, $order) {
                 $query->orderByRaw("CASE WHEN name IS NULL THEN 1 ELSE 0 END, name $order");
             })
-            ->orderColumn('available_at', function ($query, $keyword) {
-                $query->whereRaw("CONVERT(date, available_at) LIKE ?", ["%{$keyword}%"]);
+            ->orderColumn('available_at', function ($query, $order) {
+                $query->orderByRaw("
+                        CASE WHEN available_at IS NULL THEN 1 ELSE 0 END,
+                        available_at $order
+                    ");
             })
-            ->orderColumn('created_at', function ($query, $keyword) {
-                $query->whereRaw("CONVERT(date, created_at) LIKE ?", ["%{$keyword}%"]);
+            ->orderColumn('created_at', function ($query, $order) {
+                $query->orderByRaw("
+                    CASE WHEN created_at IS NULL THEN 1 ELSE 0 END,
+                    created_at $order
+                ");
             })
-            ->orderColumn('finished_at', function ($query, $keyword) {
-                $query->whereRaw("CONVERT(date, finished_at) LIKE ?", ["%{$keyword}%"]);
+            ->orderColumn('finished_at', function ($query, $order) {
+                $query->orderByRaw("
+                    CASE WHEN finished_at IS NULL THEN 1 ELSE 0 END,
+                    finished_at $order
+                ");
             })
             ->filter(function ($query) {
                 $search = request('search.value');
