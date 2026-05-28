@@ -8,6 +8,7 @@ use App\Helpers\Helper;
 use App\Modules\Sync\Domain\DTO\QueryDTO;
 use App\Shared\Domain\Contracts\ExternalClient;
 use App\Shared\Infrastructure\ExternalClient\AbstractExternalClient;
+use App\Shared\Infrastructure\Persistence\CacheStorage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
@@ -23,9 +24,14 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     protected string $code;
 
-    protected int $sessionIdExpiredAt;
-
     protected string $baseUrl;
+
+    protected CacheStorage $cache;
+
+    public function __construct()
+    {
+        $this->cache = new CacheStorage();
+    }
 
     protected function baseUrl(): string
     {
@@ -54,12 +60,16 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     public function login(): void
     {
-        $now = time();
-
-        if (empty($this->sessionId) || ($this->sessionIdExpiredAt ?? 0) < ($now + 15)) {
+        $key = "sync:login:{$this->partnerKey}";
+        $this->sessionId = $this->cache->getValue(key: $key);
+        if (empty($this->sessionId)) {
             $result = $this->imuisCall('LOGIN');
             $this->sessionId = $result['SESSION']['SESSIONID'];
-            $this->sessionIdExpiredAt = $now + 1800;
+            $this->cache->acquire(
+                key: $key,
+                value: $this->sessionId,
+                ttl: 1800
+            );
         }
     }
 
@@ -72,20 +82,20 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
         ] = $this->generateFilters($query->filters);
 
         $dataSet = '
-                    <NewDataSet>
-                        <Table1>
-                             <TABLE>'.$query->table.'</TABLE>
-                             <SELECTFIELDS>'.$this->generateFields($query->fields).'</SELECTFIELDS>
-                             <WHEREFIELDS>'.$fields.'</WHEREFIELDS>
-                             <WHEREOPERATORS>'.$operations.'</WHEREOPERATORS>
-                             <WHEREVALUES>'.$values.'</WHEREVALUES>
-                             <ORDERBY>'.$this->generateSorts($query->sorts).'</ORDERBY>
-                             <MAXRESULT>0</MAXRESULT>
-                             <PAGESIZE>'.$query->pageSize.'</PAGESIZE>
-                             <SELECTPAGE>{page}</SELECTPAGE>
-                        </Table1>
-                    </NewDataSet>
-                    ';
+            <NewDataSet>
+                <Table1>
+                        <TABLE>' . $query->table . '</TABLE>
+                        <SELECTFIELDS>' . $this->generateFields($query->fields) . '</SELECTFIELDS>
+                        <WHEREFIELDS>' . $fields . '</WHEREFIELDS>
+                        <WHEREOPERATORS>' . $operations . '</WHEREOPERATORS>
+                        <WHEREVALUES>' . $values . '</WHEREVALUES>
+                        <ORDERBY>' . $this->generateSorts($query->sorts) . '</ORDERBY>
+                        <MAXRESULT>0</MAXRESULT>
+                        <PAGESIZE>' . $query->pageSize . '</PAGESIZE>
+                        <SELECTPAGE>{page}</SELECTPAGE>
+                </Table1>
+            </NewDataSet>
+            ';
 
         return $this->paginate(
             endpoint: 'GETSTAMTABELRECORDS',
@@ -111,7 +121,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                 $attempt = 0;
                 $success = false;
 
-                while ($attempt < $maxRetries && ! $success) {
+                while ($attempt < $maxRetries && !$success) {
                     try {
                         $options = str_replace('{page}', (string) $page, $opts);
                         $response = $this->imuisCall($endpoint, $options);
@@ -128,8 +138,8 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         }
 
                         $oneRow = array_first($response['DATA'])
-                            |> (fn($x) => is_array($x))
-                            |> (fn($x) => empty($x));
+                        |> (fn($x) => is_array($x))
+                        |> (fn($x) => empty($x));
 
                         if ($oneRow) {
                             yield $response['DATA'];
@@ -145,7 +155,6 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         }
 
                         $success = true;
-
                     } catch (Throwable $th) {
                         $attempt++;
                         Log::warning("Page {$page} failed attempt {$attempt}: ", Helper::LogErrorData($th));
@@ -153,13 +162,13 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         if ($attempt >= $maxRetries) {
 
                             throw new RuntimeException(
-                                "Failed to fetch page {$page} after {$maxRetries} attempts. Process stopped. ".$th->getMessage()
+                                "Failed to fetch page {$page} after {$maxRetries} attempts. Process stopped. " . $th->getMessage()
                             );
                         }
 
                         pow(2, $attempt)
-                            |> (fn ($x) => min($x, 180))
-                            |> sleep(...);
+                        |> (fn($x) => min($x, 180))
+                        |> sleep(...);
                     }
                 }
 

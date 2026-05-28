@@ -55,7 +55,7 @@ class SyncTaskJob implements ShouldQueue
         $uuid = $this->syncTaskDTO->uuid;
         $lockKey = "lock:{$clientId}:{$table}";
         $isLock = $this->cache->acquire($lockKey, $uuid, $this->timeout);
-        $resultKey = 'sync:result:'.$this->syncTaskDTO->uuid;
+        $resultKey = 'sync:result:' . $this->syncTaskDTO->uuid;
 
         $tenantDB = Helper::TenantName($clientId);
         $tenant->connect($tenantDB);
@@ -113,7 +113,6 @@ class SyncTaskJob implements ShouldQueue
                 ),
             );
             $commandBus->dispatch($syncTaskCommand);
-
         } catch (Throwable $th) {
             Log::error('SyncTaskJob', Helper::LogErrorData($th));
             $this->cache->release($lockKey);

@@ -23,10 +23,11 @@ class CacheStorage
     }
 
     public function getValue(
-        string $key
+        string $key,
+        mixed $default = null
     ): ?string {
 
-        return Cache::get($key);
+        return Cache::get($key, $default);
 
     }
 }
