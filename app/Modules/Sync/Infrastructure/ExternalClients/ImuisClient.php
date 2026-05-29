@@ -60,7 +60,8 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     public function login(): void
     {
-        $key = "sync:login:{$this->partnerKey}";
+        $hash = md5($this->partnerKey . $this->code);
+        $key = "sync:login:{$hash}";
         $this->sessionId = $this->cache->getValue(key: $key);
         if (empty($this->sessionId) || $this->sessionId === null) {
             $result = $this->imuisCall('LOGIN');
