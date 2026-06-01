@@ -23,7 +23,7 @@ class SyncTaskJob implements ShouldQueue
 {
     use Queueable;
 
-    public int $timeout = 14400;
+    public int $timeout = 13200; // 220 minutes
 
     public int $tries = 3;
 
