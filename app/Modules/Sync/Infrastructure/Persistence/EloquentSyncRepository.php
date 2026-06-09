@@ -33,12 +33,11 @@ final class EloquentSyncRepository implements SyncRepository
             foreach ($rows as $row) {
                 yield $row->toArray();
             }
-
         })();
 
         $rows = collect($arrays)
-            ->unique(function ($row) use ($uniqueBy) {
-                return implode('.', array_map(fn ($col) => $row[$col] ?? '', $uniqueBy));
+            ->unique(function ($row) {
+                return md5(implode('.', $row));
             })
             ->values()
             ->all();
@@ -60,7 +59,6 @@ final class EloquentSyncRepository implements SyncRepository
             foreach ($rows as $row) {
                 yield $row->toArray();
             }
-
         })();
 
         $this->bulkInsert->setLimitInsertBulk(2100);
@@ -82,18 +80,18 @@ final class EloquentSyncRepository implements SyncRepository
     ): ?array {
 
         $onConditions = collect($keys)
-            ->map(fn ($k) => "target.$k = source.$k")
+            ->map(fn($k) => "target.$k = source.$k")
             ->implode(' AND ');
 
         $updateColumns = collect($columns)
-            ->filter(fn ($c) => ! in_array($c, $keys))
-            ->map(fn ($c) => "$c = source.$c")
+            ->filter(fn($c) => ! in_array($c, $keys))
+            ->map(fn($c) => "$c = source.$c")
             ->implode(', ');
 
         $insertColumns = implode(', ', $columns);
 
         $insertValues = collect($columns)
-            ->map(fn ($c) => "source.$c")
+            ->map(fn($c) => "source.$c")
             ->implode(', ');
 
         //        $mergeSql = '
@@ -112,15 +110,15 @@ final class EloquentSyncRepository implements SyncRepository
         //        DB::statement($mergeSql, [$sourceId]);
 
         $mergeSql = '
-                    MERGE '.$targetTable.' AS target
-                    USING '.$stagingTable.' AS source
-                    ON '.$onConditions.'
+                    MERGE ' . $targetTable . ' AS target
+                    USING ' . $stagingTable . ' AS source
+                    ON ' . $onConditions . '
                     WHEN MATCHED AND target.hash <> source.hash THEN
                         UPDATE SET
-                            '.$updateColumns.'
+                            ' . $updateColumns . '
                     WHEN NOT MATCHED BY TARGET THEN
-                        INSERT ('.$insertColumns.')
-                        VALUES ('.$insertValues.')
+                        INSERT (' . $insertColumns . ')
+                        VALUES (' . $insertValues . ')
                     OUTPUT $action, inserted.id AS inserted_id;
                 ';
 
