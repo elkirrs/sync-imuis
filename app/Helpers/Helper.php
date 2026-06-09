@@ -16,6 +16,7 @@ final readonly class Helper
             'code' => $th->getCode(),
             'file' => $th->getFile(),
             'line' => $th->getLine(),
+            'exception' => $th::class,
         ];
     }
 

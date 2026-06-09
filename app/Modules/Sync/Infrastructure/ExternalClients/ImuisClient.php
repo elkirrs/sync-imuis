@@ -6,13 +6,13 @@ namespace App\Modules\Sync\Infrastructure\ExternalClients;
 
 use App\Helpers\Helper;
 use App\Modules\Sync\Domain\DTO\QueryDTO;
+use App\Modules\Sync\Domain\Exceptions\EmptyDataOnPageException;
 use App\Shared\Domain\Contracts\ExternalClient;
 use App\Shared\Infrastructure\ExternalClient\AbstractExternalClient;
 use App\Shared\Infrastructure\Persistence\CacheStorage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
-use RuntimeException;
 use Throwable;
 use function is_array;
 
@@ -27,6 +27,8 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
     protected string $baseUrl;
 
     protected CacheStorage $cache;
+
+    protected int $maxRetries = 5;
 
     public function __construct()
     {
@@ -74,37 +76,58 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
         }
     }
 
-    public function fetch(QueryDTO $query): iterable
-    {
+    public function fetch(
+        QueryDTO $query
+    ): iterable {
+
+        $filters = $query->filters;
+        if (!$this->isMultipleFilterSets($filters)) {
+            return $this->executeFilterSet($query, $filters);
+        }
+
+        return LazyCollection::make(function () use ($query, $filters) {
+
+            $errorData = [];
+
+            foreach ($filters as $filterSet) {
+                try {
+                    yield from $this->executeFilterSet($query, $filterSet);
+                } catch (Throwable $e) {
+                    $errorData = Helper::LogErrorData($e);
+                    $errorData['filterSet'] = $filterSet;
+                    Log::error("Error executing filter set: ", $errorData);
+                    continue;
+                }
+            }
+        });
+    }
+
+    private function executeFilterSet(
+        QueryDTO $query,
+        array $filters
+    ): LazyCollection {
+
         [
             $fields,
             $operations,
             $values
-        ] = $this->generateFilters($query->filters);
+        ] = $this->generateFilters($filters);
 
-        $dataSet = '
-            <NewDataSet>
-                <Table1>
-                        <TABLE>' . $query->table . '</TABLE>
-                        <SELECTFIELDS>' . $this->generateFields($query->fields) . '</SELECTFIELDS>
-                        <WHEREFIELDS>' . $fields . '</WHEREFIELDS>
-                        <WHEREOPERATORS>' . $operations . '</WHEREOPERATORS>
-                        <WHEREVALUES>' . $values . '</WHEREVALUES>
-                        <ORDERBY>' . $this->generateSorts($query->sorts) . '</ORDERBY>
-                        <MAXRESULT>0</MAXRESULT>
-                        <PAGESIZE>' . $query->pageSize . '</PAGESIZE>
-                        <SELECTPAGE>{page}</SELECTPAGE>
-                </Table1>
-            </NewDataSet>
-            ';
+        $dataSet = $this->buildDataset(
+            query: $query,
+            fields: $fields,
+            operations: $operations,
+            values: $values
+        );
 
         return $this->paginate(
             endpoint: 'GETSTAMTABELRECORDS',
             opts: $dataSet,
-            maxRetries: 5,
+            maxRetries: $this->maxRetries,
             table: $query->table
         );
     }
+
 
     private function paginate(
         string $endpoint,
@@ -130,7 +153,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         if (empty($response['DATA'])) {
                             unset($response);
                             Log::warning("Page {$page} returned empty data");
-                            throw new RuntimeException("Empty data on page {$page}");
+                            throw new EmptyDataOnPageException("Empty data on page {$page}");
                         }
 
                         if ($page <= 5) {
@@ -162,7 +185,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
                         if ($attempt >= $maxRetries) {
 
-                            throw new RuntimeException(
+                            throw new EmptyDataOnPageException(
                                 "Failed to fetch page {$page} after {$maxRetries} attempts. Process stopped. " . $th->getMessage()
                             );
                         }
@@ -229,5 +252,41 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
     ): string {
 
         return implode(';', $sorts);
+    }
+
+    private function buildDataset(
+        QueryDTO $query,
+        string $fields,
+        string $operations,
+        string $values
+    ): string {
+
+        return '
+            <NewDataSet>
+                <Table1>
+                    <TABLE>' . $query->table . '</TABLE>
+                    <SELECTFIELDS>' . $this->generateFields($query->fields) . '</SELECTFIELDS>
+                    <WHEREFIELDS>' . $fields . '</WHEREFIELDS>
+                    <WHEREOPERATORS>' . $operations . '</WHEREOPERATORS>
+                    <WHEREVALUES>' . $values . '</WHEREVALUES>
+                    <ORDERBY>' . $this->generateSorts($query->sorts) . '</ORDERBY>
+                    <MAXRESULT>0</MAXRESULT>
+                    <PAGESIZE>' . $query->pageSize . '</PAGESIZE>
+                    <SELECTPAGE>{page}</SELECTPAGE>
+                </Table1>
+            </NewDataSet>
+        ';
+    }
+
+    private function isMultipleFilterSets(
+        array $filters
+    ): bool {
+
+        if ($filters === []) {
+            return false;
+        }
+
+        return isset($filters[0][0][0])
+            && is_array($filters[0][0]);
     }
 }

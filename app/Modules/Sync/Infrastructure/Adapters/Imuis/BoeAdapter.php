@@ -24,33 +24,98 @@ final class BoeAdapter extends AbstractAdapter
     public function fields(): array
     {
         return [
-            'AANT', 'AANT2', 'AANT3', 'AANTCRE', 'AANTCRE2', 'AANTCRE3', 'AANTDEB', 'AANTDEB2', 'AANTDEB3', 'BEDR',
-            'BEDRBETKORT', 'BEDRBOEK', 'BEDRBOEKVAL', 'BEDRBTW', 'BEDRCRE', 'BEDRDEB', 'BEDRINCL', 'BEDRKB',
-            'BEDRBTWVAL', 'BEOORCD', 'BOEKSTUK', 'BTW', 'CRE', 'DAGB', 'DAT', 'DEB', 'DOSSIER', 'FACT',
-            'GRB', 'GRPROW', 'ISOPBOEK', 'JR', 'KDR', 'KOERS', 'KPL', 'OMSCHR', 'OPM', 'PN', 'PRG', 'REK',
-            'RG', 'STORNO', 'TEGREK', 'VAL',
+            'AANT',
+            'AANT2',
+            'AANT3',
+            'AANTCRE',
+            'AANTCRE2',
+            'AANTCRE3',
+            'AANTDEB',
+            'AANTDEB2',
+            'AANTDEB3',
+            'BEDR',
+            'BEDRBETKORT',
+            'BEDRBOEK',
+            'BEDRBOEKVAL',
+            'BEDRBTW',
+            'BEDRCRE',
+            'BEDRDEB',
+            'BEDRINCL',
+            'BEDRKB',
+            'BEDRBTWVAL',
+            'BEOORCD',
+            'BOEKSTUK',
+            'BTW',
+            'CRE',
+            'DAGB',
+            'DAT',
+            'DEB',
+            'DOSSIER',
+            'FACT',
+            'GRB',
+            'GRPROW',
+            'ISOPBOEK',
+            'JR',
+            'KDR',
+            'KOERS',
+            'KPL',
+            'OMSCHR',
+            'OPM',
+            'PN',
+            'PRG',
+            'REK',
+            'RG',
+            'STORNO',
+            'TEGREK',
+            'VAL',
         ];
     }
 
+
+    // [
+    //     [['JR', '=', '2024'],['PN', '=', '1'],],
+    //     [['JR', '=', '2024'],['PN', '=', '2'],],
+    //     ...
+    // ]
     public function filters(): array
     {
-        return [
-            ['JR', '=', '2024'],
-            ['PN', '=', '1'],
-        ];
+        $currentYear = (int) date('Y');
+
+        $filters = [];
+
+        for ($year = $currentYear - 2; $year <= $currentYear; $year++) {
+
+            $maxPeriod = $year === $currentYear
+                ? (int) date('n') // current month number
+                : 14;
+
+            for ($period = 0; $period <= $maxPeriod; $period++) {
+
+                $filters[] = [
+                    ['JR', '=', (string) $year],
+                    ['PN', '=', (string) $period],
+                ];
+            }
+        }
+
+        return $filters;
     }
 
     public function sorts(): array
     {
         return [
-            'JR', 'PN',
+            'JR',
+            'PN',
         ];
     }
 
     public function unique(): array
     {
         return [
-            'DAGB', 'JR', 'PN', 'RG'
+            'DAGB',
+            'JR',
+            'PN',
+            'RG'
         ];
     }
 

@@ -13,6 +13,8 @@ use App\Modules\Sync\Infrastructure\Factories\TableAdaptorFactory;
 use App\Shared\Enums\ImuisDataTableEnum;
 use App\Shared\Infrastructure\Connections\IntegrationConnection;
 use App\Shared\Infrastructure\Factories\ClientFactory;
+use App\Shared\Infrastructure\Persistence\CacheStorage;
+
 use function array_map;
 
 final readonly class SyncCommandHandler
@@ -22,6 +24,7 @@ final readonly class SyncCommandHandler
         private TableAdaptorFactory $tableAdaptorFactory,
         private SyncRepository $syncRepository,
         private ConnectionReadRepository $administrations,
+        private CacheStorage $cache,
     ) {}
 
     public function __invoke(
@@ -45,22 +48,19 @@ final readonly class SyncCommandHandler
 
                 $apiRow['connect_id'] = $connect->id->value;
                 yield $adaptor->map($apiRow);
-
             }
-
         })();
 
         $this->syncRepository->setConnection('tenant');
 
         // new data will be able added two ways: throughMerge and throughUpsert
-        $data = $this->throughUpsert(
+        $this->throughUpsert(
             command: $command,
             rows: $rows,
             adaptor: $adaptor,
         );
 
-        cache()->add('sync:result:'.$command->uuid, json_encode($data));
-
+        $this->setCountRows($command);
     }
 
     private function throughMerge(
@@ -69,9 +69,9 @@ final readonly class SyncCommandHandler
         iterable $rows,
         TableAdapter $adaptor
 
-    ): array {
+    ): void {
         $table = ImuisDataTableEnum::fromName($command->table)->value;
-        $stagingTable = 'staging_'.$table;
+        $stagingTable = 'staging_' . $table;
 
         $this->syncRepository->delete($stagingTable, $connect->id->value);
 
@@ -80,44 +80,52 @@ final readonly class SyncCommandHandler
         $columns[] = 'connect_id';
         $columns[] = 'hash';
 
-        $data = array_map('strtolower', $adaptor->unique())
-                |> (fn ($x) => array_merge(['connect_id'], $x))
-                |> (fn ($x) => $this->syncRepository->merge(
-                    targetTable: $table,
-                    stagingTable: $stagingTable,
-                    keys: $x,
-                    columns: $columns,
-                    sourceIdColumn: 'connect_id',
-                    sourceId: $connect->id->value,
-                ));
+        array_map('strtolower', $adaptor->unique())
+        |> (fn($x) => array_merge(['connect_id'], $x))
+        |> (fn($x) => $this->syncRepository->merge(
+            targetTable: $table,
+            stagingTable: $stagingTable,
+            keys: $x,
+            columns: $columns,
+            sourceIdColumn: 'connect_id',
+            sourceId: $connect->id->value,
+        ));
 
         $this->syncRepository->delete($stagingTable, $connect->id->value);
-
-        return $data;
     }
 
     private function throughUpsert(
         SyncCommand $command,
         iterable $rows,
         TableAdapter $adaptor
-    ): array {
+    ): void {
+
         $table = ImuisDataTableEnum::fromName($command->table)->value;
 
         $this->syncRepository->setConnection('tenant');
 
         array_map('strtolower', $adaptor->unique())
-            |> (fn ($x) => array_merge(['connect_id'], $x))
-            |> (fn ($x) => $this->syncRepository->bulkUpsert(
-                rows: $rows,
-                tableName: $table,
-                uniqueBy: $x
-            ));
+        |> (fn($x) => array_merge(['connect_id'], $x))
+        |> (fn($x) => $this->syncRepository->bulkUpsert(
+            rows: $rows,
+            tableName: $table,
+            uniqueBy: $x
+        ));
+    }
+
+    private function setCountRows(
+        SyncCommand $command,
+    ): void {
+
+        $table = ImuisDataTableEnum::fromName($command->table)->value;
 
         $countRows = $this->syncRepository->count($table);
 
-        return [
+        $data = [
             'table' => $command->table,
             'count' => $countRows,
         ];
+
+        $this->cache->acquire('sync:result:' . $command->uuid, json_encode($data), 180);
     }
 }
