@@ -7,6 +7,7 @@ namespace App\Modules\Sync\Infrastructure\Adapters\Imuis;
 use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\GrbmutMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
+use Override;
 
 // https://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-grbmut-grootboekmutaties/
 final class GrbmutAdapter extends AbstractAdapter
@@ -24,9 +25,32 @@ final class GrbmutAdapter extends AbstractAdapter
     public function fields(): array
     {
         return [
-            'AANT', 'AANT2', 'AANT3', 'AFGELETTERD', 'AFLCD', 'BEDR', 'BEDRVAL', 'BOEKSTUK', 'CRE',
-            'DAGB', 'DAT', 'DEB', 'DEBCRE', 'DOSSIER', 'FACT', 'GRB', 'JR', 'JRAANSL', 'KDR', 'KPL',
-            'PN', 'RG', 'SRT', 'TEGREK', 'TRANSROW', 'VAL',
+            'AANT',
+            'AANT2',
+            'AANT3',
+            'AFGELETTERD',
+            'AFLCD',
+            'BEDR',
+            'BEDRVAL',
+            'BOEKSTUK',
+            'CRE',
+            'DAGB',
+            'DAT',
+            'DEB',
+            'DEBCRE',
+            'DOSSIER',
+            'FACT',
+            'GRB',
+            'JR',
+            'JRAANSL',
+            'KDR',
+            'KPL',
+            'PN',
+            'RG',
+            'SRT',
+            'TEGREK',
+            'TRANSROW',
+            'VAL',
         ];
     }
 
@@ -79,5 +103,11 @@ final class GrbmutAdapter extends AbstractAdapter
             'transrow' => ['int', 'TRANSROW'],
             'val' => ['string', 'VAL'],
         ];
+    }
+
+    #[Override]
+    public function pageSize(): int
+    {
+        return 400;
     }
 }
