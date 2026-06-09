@@ -15,7 +15,7 @@ readonly class ConnectionSaveCommand implements Command
         public string $authCode,
         public string $administrationCode,
         public bool $isActive,
-        public string $description,
+        public ?string $description,
         public string $type,
         public array $tables,
         public string $url,

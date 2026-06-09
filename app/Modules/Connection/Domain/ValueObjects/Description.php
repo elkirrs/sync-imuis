@@ -7,11 +7,10 @@ namespace App\Modules\Connection\Domain\ValueObjects;
 final class Description
 {
     public function __construct(
-        public string $value {
+        public ?string $value {
             get {
                 return $this->value;
             }
         },
-    ) {
-    }
+    ) {}
 }

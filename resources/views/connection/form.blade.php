@@ -14,4 +14,3 @@
 <div class="col-10">
     {!! Html::Button(6, "submit","save", "Save", ['class' => 'btn btn-outline-success']) !!}
 </div>
-

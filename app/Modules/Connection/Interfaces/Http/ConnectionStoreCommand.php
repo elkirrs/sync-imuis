@@ -33,7 +33,7 @@ final readonly class ConnectionStoreCommand
                 authCode: $data['auth_code'],
                 administrationCode: $data['administration_code'],
                 isActive: (bool) $data['is_active'],
-                description: $data['description'],
+                description: $data['description'] ?? null,
                 type: 'administration',
                 tables: $data['tables'] ?? [],
                 url: $data['url']
@@ -43,7 +43,6 @@ final readonly class ConnectionStoreCommand
 
             $status = 'success';
             $msg = __('Connection created successfully.');
-
         } catch (Throwable $th) {
             $status = 'error';
             $msg = $th->getMessage();
