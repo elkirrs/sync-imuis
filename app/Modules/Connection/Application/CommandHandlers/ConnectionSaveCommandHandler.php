@@ -51,13 +51,15 @@ readonly class ConnectionSaveCommandHandler
         if ($command->id !== 0) {
             $entityConnect = $this->repo->findOne($command->id);
             $entity->createdDB($entityConnect->isCreatedDB->value);
+        } else {
+            $this->repo->save($entity);
         }
 
         if (! $entity->isCreatedDB->value) {
             $this->dbService->createForConnection($entity);
             $entity->createdDB(true);
         }
-        $entity->createdDB(true);
+
         $this->repo->save($entity);
     }
 }

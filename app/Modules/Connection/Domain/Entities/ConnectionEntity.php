@@ -51,8 +51,7 @@ class ConnectionEntity
                 return $this->isCreatedDB;
             }
         },
-    ) {
-    }
+    ) {}
 
     public function setId(int $id): void
     {

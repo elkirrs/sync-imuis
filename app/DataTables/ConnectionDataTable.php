@@ -85,23 +85,23 @@ final class ConnectionDataTable extends BaseDataTable
     private function actions(
         $query
     ): string {
-        $actions = '<a href="'.route('connections.edit', ['id' => $query->id]).'"'
-            .' class="p-1"'
-            .' title="edit"'
-            .'><i class="bi bi-pencil-square md-icon"></i></a>';
+        $actions = '<a href="' . route('connections.edit', ['id' => $query->id]) . '"'
+            . ' class="p-1"'
+            . ' title="edit"'
+            . '><i class="bi bi-pencil-square md-icon"></i></a>';
 
         if (! (bool) $query->is_created_db) {
-            $actions .= '<a href="'.route('connections.tenant.create', ['id' => $query->id]).'"'
-                .' class="p-1 text-warning"'
-                .'><i class="bi bi-database-add md-icon"></i></a>';
+            $actions .= '<a href="' . route('connections.tenant.create', ['id' => $query->id]) . '"'
+                . ' class="p-1 text-warning"'
+                . '><i class="bi bi-database-add md-icon"></i></a>';
         }
 
         $actions .= '<a href="javascript:void(0)"'
-            .' class="delete-item p-1 text-danger"'
-            .' data-url="'.route('connections.delete', ['id' => $query->id]).'"'
-            .' data-uuid="'.$query->id.'"'
-            .' title="delete"'
-            .'><i class="bi bi-trash3 md-icon"></i></a>';
+            . ' class="delete-item p-1 text-danger"'
+            . ' data-url="' . route('connections.delete', ['id' => $query->id]) . '"'
+            . ' data-uuid="' . $query->id . '"'
+            . ' title="delete"'
+            . '><i class="bi bi-trash3 md-icon"></i></a>';
 
         return $actions;
     }
