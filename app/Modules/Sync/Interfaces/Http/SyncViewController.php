@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Sync\Interfaces\Http;
 
 use App\Modules\Sync\Application\Queries\SyncTaskDetailQuery;
+use App\Modules\Sync\Application\Queries\SyncTaskQuery;
 use App\Shared\Infrastructure\Bus\QueryBus;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -23,6 +24,9 @@ final readonly class SyncViewController
         $query = new SyncTaskDetailQuery($uuid);
         $detail = $this->queryBus->ask($query);
 
-        return view('sync.detail', compact('detail'));
+        $queryConnect = new SyncTaskQuery($uuid);
+        $connectData = $this->queryBus->ask($queryConnect);
+
+        return view('sync.detail', compact('detail', 'connectData'));
     }
 }
