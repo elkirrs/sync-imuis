@@ -40,6 +40,6 @@ abstract class AbstractAdapter implements SchemaDataBase, TableAdapter
 
     public function pageSize(): int
     {
-        return 5000;
+        return 10000;
     }
 }

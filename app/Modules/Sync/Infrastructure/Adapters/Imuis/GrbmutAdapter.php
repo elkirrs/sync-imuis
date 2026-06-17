@@ -7,7 +7,6 @@ namespace App\Modules\Sync\Infrastructure\Adapters\Imuis;
 use App\Modules\Sync\Infrastructure\Adapters\AbstractAdapter;
 use App\Modules\Sync\Infrastructure\Mappers\Imuis\GrbmutMapper;
 use App\Shared\Enums\ImuisDataTableEnum;
-use Override;
 
 // https://apps.imuisonline.com/muis-apps/velden-beschikbaar-voor-grbmut-grootboekmutaties/
 final class GrbmutAdapter extends AbstractAdapter

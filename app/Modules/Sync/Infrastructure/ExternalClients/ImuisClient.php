@@ -143,6 +143,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
             $page = 1;
             $totalPages = null;
+            $failPages = [];
 
             while ($totalPages === null || $page <= $totalPages) {
                 $attempt = 0;
@@ -184,15 +185,12 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         }
 
                         $success = true;
-                    } catch (Throwable $th) {
+                    } catch (EmptyDataOnPageException $th) {
                         $attempt++;
                         Log::warning("Page {$page} failed attempt {$attempt}: ", Helper::LogErrorData($th));
 
                         if ($attempt >= $maxRetries) {
-
-                            throw new EmptyDataOnPageException(
-                                "Failed to fetch page {$page} after {$maxRetries} attempts. Process stopped. ".$th->getMessage()
-                            );
+                            $failPages[] = $page;
                         }
 
                         pow(2, $attempt)
@@ -202,6 +200,48 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                 }
 
                 $page++;
+            }
+
+            if (! empty($failPages)) {
+                foreach ($failPages as $failedPage) {
+                    $attempt = 0;
+                    $success = false;
+
+                    while ($attempt < $maxRetries && ! $success) {
+                        try {
+                            $options = str_replace('{page}', (string) $failedPage, $opts);
+                            $response = $this->imuisCall($endpoint, $options);
+
+                            if (empty($response['DATA'])) {
+                                unset($response);
+                                Log::warning("Page {$failedPage} returned empty data");
+                                throw new EmptyDataOnPageException("Empty data on page {$failedPage}");
+                            }
+
+                            $oneRow = array_first($response['DATA'])
+                            |> (fn ($x) => is_array($x))
+                            |> (fn ($x) => empty($x));
+
+                            if ($oneRow) {
+                                yield $response['DATA'];
+
+                                return;
+                            }
+
+                            foreach ($response['DATA'] as $row) {
+                                yield $row;
+                            }
+                            $success = true;
+                        } catch (Throwable $th) {
+                            $dataError = Helper::LogErrorData($th);
+                            $dataError['failedPage'] = $failedPage;
+                            $dataError['opts'] = $opts;
+                            Log::warning("Page {$failedPage} failed: ", $dataError);
+
+                            $attempt++;
+                        }
+                    }
+                }
             }
         });
     }
