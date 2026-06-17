@@ -190,6 +190,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         $dataError = Helper::LogErrorData($th);
                         $dataError['failedPage'] = $page;
                         $dataError['opts'] = $opts;
+                        $dataError['admin'] = $this->administrationCode;
                         Log::warning("Page {$page} failed attempt {$attempt}: ", $dataError);
 
                         if ($attempt >= $maxRetries) {
@@ -239,6 +240,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                             $dataError = Helper::LogErrorData($th);
                             $dataError['failedPage'] = $failedPage;
                             $dataError['opts'] = $opts;
+                            $dataError['admin'] = $this->administrationCode;
                             Log::warning("Page {$failedPage} failed: ", $dataError);
 
                             $attempt++;
