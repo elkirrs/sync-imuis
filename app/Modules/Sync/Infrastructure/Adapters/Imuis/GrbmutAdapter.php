@@ -104,10 +104,4 @@ final class GrbmutAdapter extends AbstractAdapter
             'val' => ['string', 'VAL'],
         ];
     }
-
-    #[Override]
-    public function pageSize(): int
-    {
-        return 1000;
-    }
 }
