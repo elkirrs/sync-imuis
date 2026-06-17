@@ -65,7 +65,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     public function login(): void
     {
-        $hash = md5($this->partnerKey.$this->code);
+        $hash = md5($this->partnerKey . $this->code);
         $key = "sync:login:{$hash}";
         $this->sessionId = $this->cache->getValue(key: $key);
         if (empty($this->sessionId) || $this->sessionId === null) {
@@ -163,12 +163,12 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         if ($page === 1) {
                             $code = md5($options);
                             $path = "{$table}/{$this->administrationCode}/{$code}.json";
-                            Storage::disk('local')->put($path, $opts.PHP_EOL.json_encode($response));
+                            Storage::disk('local')->put($path, $opts . PHP_EOL . json_encode($response));
                         }
 
                         $oneRow = array_first($response['DATA'])
-                        |> (fn ($x) => is_array($x))
-                        |> (fn ($x) => empty($x));
+                        |> (fn($x) => is_array($x))
+                        |> (fn($x) => empty($x));
 
                         if ($oneRow) {
                             yield $response['DATA'];
@@ -187,15 +187,18 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         $success = true;
                     } catch (EmptyDataOnPageException $th) {
                         $attempt++;
-                        Log::warning("Page {$page} failed attempt {$attempt}: ", Helper::LogErrorData($th));
+                        $dataError = Helper::LogErrorData($th);
+                        $dataError['failedPage'] = $page;
+                        $dataError['opts'] = $opts;
+                        Log::warning("Page {$page} failed attempt {$attempt}: ", $dataError);
 
                         if ($attempt >= $maxRetries) {
                             $failPages[] = $page;
+                        } else {
+                            pow(2, $attempt)
+                            |> (fn($x) => min($x, 180))
+                            |> sleep(...);
                         }
-
-                        pow(2, $attempt)
-                        |> (fn ($x) => min($x, 180))
-                        |> sleep(...);
                     }
                 }
 
@@ -219,8 +222,8 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                             }
 
                             $oneRow = array_first($response['DATA'])
-                            |> (fn ($x) => is_array($x))
-                            |> (fn ($x) => empty($x));
+                            |> (fn($x) => is_array($x))
+                            |> (fn($x) => empty($x));
 
                             if ($oneRow) {
                                 yield $response['DATA'];
@@ -309,14 +312,14 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
         return '
             <NewDataSet>
                 <Table1>
-                    <TABLE>'.$query->table.'</TABLE>
-                    <SELECTFIELDS>'.$this->generateFields($query->fields).'</SELECTFIELDS>
-                    <WHEREFIELDS>'.$fields.'</WHEREFIELDS>
-                    <WHEREOPERATORS>'.$operations.'</WHEREOPERATORS>
-                    <WHEREVALUES>'.$values.'</WHEREVALUES>
-                    <ORDERBY>'.$this->generateSorts($query->sorts).'</ORDERBY>
+                    <TABLE>' . $query->table . '</TABLE>
+                    <SELECTFIELDS>' . $this->generateFields($query->fields) . '</SELECTFIELDS>
+                    <WHEREFIELDS>' . $fields . '</WHEREFIELDS>
+                    <WHEREOPERATORS>' . $operations . '</WHEREOPERATORS>
+                    <WHEREVALUES>' . $values . '</WHEREVALUES>
+                    <ORDERBY>' . $this->generateSorts($query->sorts) . '</ORDERBY>
                     <MAXRESULT>0</MAXRESULT>
-                    <PAGESIZE>'.$query->pageSize.'</PAGESIZE>
+                    <PAGESIZE>' . $query->pageSize . '</PAGESIZE>
                     <SELECTPAGE>{page}</SELECTPAGE>
                 </Table1>
             </NewDataSet>
