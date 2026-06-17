@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
 use Throwable;
+
 use function is_array;
 
 final class ImuisClient extends AbstractExternalClient implements ExternalClient
@@ -24,6 +25,8 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     protected string $code;
 
+    protected string|int $administrationCode;
+
     protected string $baseUrl;
 
     protected CacheStorage $cache;
@@ -32,7 +35,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     public function __construct()
     {
-        $this->cache = new CacheStorage();
+        $this->cache = new CacheStorage;
     }
 
     protected function baseUrl(): string
@@ -51,7 +54,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
         $this->partnerKey = $credentials['partner_key'];
         $this->code = $credentials['auth_code'];
         $this->baseUrl = $credentials['url'] ?? '';
-
+        $this->administrationCode = $credentials['administration_code'] ?? '';
         $this->login();
     }
 
@@ -62,7 +65,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     public function login(): void
     {
-        $hash = md5($this->partnerKey . $this->code);
+        $hash = md5($this->partnerKey.$this->code);
         $key = "sync:login:{$hash}";
         $this->sessionId = $this->cache->getValue(key: $key);
         if (empty($this->sessionId) || $this->sessionId === null) {
@@ -81,7 +84,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
     ): iterable {
 
         $filters = $query->filters;
-        if (!$this->isMultipleFilterSets($filters)) {
+        if (! $this->isMultipleFilterSets($filters)) {
             return $this->executeFilterSet($query, $filters);
         }
 
@@ -92,10 +95,11 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
             foreach ($filters as $filterSet) {
                 try {
                     yield from $this->executeFilterSet($query, $filterSet);
-                } catch (Throwable $e) {
+                } catch (EmptyDataOnPageException $e) {
                     $errorData = Helper::LogErrorData($e);
-                    $errorData['filterSet'] = $filterSet;
-                    Log::error("Error executing filter set: ", $errorData);
+                    $errorData['filterSet'][] = $filterSet;
+                    Log::warning('Empty data on page for filter set: ', $errorData);
+
                     continue;
                 }
             }
@@ -128,7 +132,6 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
         );
     }
 
-
     private function paginate(
         string $endpoint,
         string $opts,
@@ -145,7 +148,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                 $attempt = 0;
                 $success = false;
 
-                while ($attempt < $maxRetries && !$success) {
+                while ($attempt < $maxRetries && ! $success) {
                     try {
                         $options = str_replace('{page}', (string) $page, $opts);
                         $response = $this->imuisCall($endpoint, $options);
@@ -156,17 +159,19 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                             throw new EmptyDataOnPageException("Empty data on page {$page}");
                         }
 
-                        if ($page <= 5) {
-                            $path = "{$table}/page_{$page}.json";
-                            Storage::disk('local')->put($path, json_encode($response));
+                        if ($page === 1) {
+                            $code = md5($options);
+                            $path = "{$table}/{$this->administrationCode}/{$code}.json";
+                            Storage::disk('local')->put($path, $opts.PHP_EOL.json_encode($response));
                         }
 
                         $oneRow = array_first($response['DATA'])
-                        |> (fn($x) => is_array($x))
-                        |> (fn($x) => empty($x));
+                        |> (fn ($x) => is_array($x))
+                        |> (fn ($x) => empty($x));
 
                         if ($oneRow) {
                             yield $response['DATA'];
+
                             return;
                         }
 
@@ -186,12 +191,12 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
                         if ($attempt >= $maxRetries) {
 
                             throw new EmptyDataOnPageException(
-                                "Failed to fetch page {$page} after {$maxRetries} attempts. Process stopped. " . $th->getMessage()
+                                "Failed to fetch page {$page} after {$maxRetries} attempts. Process stopped. ".$th->getMessage()
                             );
                         }
 
                         pow(2, $attempt)
-                        |> (fn($x) => min($x, 180))
+                        |> (fn ($x) => min($x, 180))
                         |> sleep(...);
                     }
                 }
@@ -264,14 +269,14 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
         return '
             <NewDataSet>
                 <Table1>
-                    <TABLE>' . $query->table . '</TABLE>
-                    <SELECTFIELDS>' . $this->generateFields($query->fields) . '</SELECTFIELDS>
-                    <WHEREFIELDS>' . $fields . '</WHEREFIELDS>
-                    <WHEREOPERATORS>' . $operations . '</WHEREOPERATORS>
-                    <WHEREVALUES>' . $values . '</WHEREVALUES>
-                    <ORDERBY>' . $this->generateSorts($query->sorts) . '</ORDERBY>
+                    <TABLE>'.$query->table.'</TABLE>
+                    <SELECTFIELDS>'.$this->generateFields($query->fields).'</SELECTFIELDS>
+                    <WHEREFIELDS>'.$fields.'</WHEREFIELDS>
+                    <WHEREOPERATORS>'.$operations.'</WHEREOPERATORS>
+                    <WHEREVALUES>'.$values.'</WHEREVALUES>
+                    <ORDERBY>'.$this->generateSorts($query->sorts).'</ORDERBY>
                     <MAXRESULT>0</MAXRESULT>
-                    <PAGESIZE>' . $query->pageSize . '</PAGESIZE>
+                    <PAGESIZE>'.$query->pageSize.'</PAGESIZE>
                     <SELECTPAGE>{page}</SELECTPAGE>
                 </Table1>
             </NewDataSet>

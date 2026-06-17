@@ -40,7 +40,7 @@ abstract class AbstractExternalClient
                 ->throw();
         } catch (Throwable $e) {
             Log::error('imuisCall', Helper::LogErrorData($e));
-            throw new \RuntimeException($e->getMessage());
+            throw new RuntimeException($e->getMessage());
         }
 
         $body = $response->body();
@@ -54,20 +54,20 @@ abstract class AbstractExternalClient
 
         $body = trim($body);
 
-        if (!str_starts_with($body, '<')) {
+        if (! str_starts_with($body, '<')) {
             throw new RuntimeException('Response is not valid XML');
         }
 
         libxml_use_internal_errors(true);
 
-        $reader = new XMLReader();
+        $reader = new XMLReader;
 
-        if (!$reader->XML(
+        if (! $reader->XML(
             $body,
             'UTF-8',
             LIBXML_NOCDATA | LIBXML_PARSEHUGE
         )) {
-            throw new \RuntimeException('Cannot read XML');
+            throw new RuntimeException('Cannot read XML');
         }
 
         $data = $this->xmlReaderToArray($reader);
@@ -140,12 +140,12 @@ abstract class AbstractExternalClient
                 || $reader->nodeType === XMLReader::CDATA
             ) {
 
-                if (!empty($stack)) {
+                if (! empty($stack)) {
 
                     $index = array_key_last($stack);
 
                     $stack[$index]['value'] =
-                        ($stack[$index]['value'] ?? '') . $reader->value;
+                        ($stack[$index]['value'] ?? '').$reader->value;
                 }
 
                 continue;
@@ -155,7 +155,7 @@ abstract class AbstractExternalClient
 
                 $node = array_pop($stack);
 
-                $value = !empty($node['children'])
+                $value = ! empty($node['children'])
                     ? $node['children']
                     : trim((string) $node['value']);
 
@@ -183,12 +183,13 @@ abstract class AbstractExternalClient
         string $key,
         mixed $value
     ): void {
-        if (!isset($target[$key])) {
+        if (! isset($target[$key])) {
             $target[$key] = $value;
+
             return;
         }
 
-        if (!is_array($target[$key]) || !array_is_list($target[$key])) {
+        if (! is_array($target[$key]) || ! array_is_list($target[$key])) {
             $target[$key] = [$target[$key]];
         }
 

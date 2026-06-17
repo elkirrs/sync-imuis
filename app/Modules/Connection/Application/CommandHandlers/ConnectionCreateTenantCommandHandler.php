@@ -39,7 +39,7 @@ readonly class ConnectionCreateTenantCommandHandler
             $this->repo->save($entity);
         } catch (Throwable $th) {
 
-            if ((int)$th->getCode() === 42000) {
+            if ((int) $th->getCode() === 42000) {
                 $entity->createdDB(true);
                 $this->repo->save($entity);
 

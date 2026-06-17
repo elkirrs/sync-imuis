@@ -64,7 +64,7 @@ final class SyncDataTable extends BaseDataTable
                 $search = request('search.value');
                 $search = Helper::escapeLike($search);
 
-                if (!$search) {
+                if (! $search) {
                     return;
                 }
 
@@ -72,9 +72,9 @@ final class SyncDataTable extends BaseDataTable
 
                     $q->where('name', 'like', "%{$search}%")
                         ->orWhere('uuid', 'like', "%{$search}%")
-                        ->orWhereRaw("CONVERT(VARCHAR(19), created_at, 120) LIKE ?", ["%{$search}%"])
-                        ->orWhereRaw("CONVERT(VARCHAR(19), available_at, 120) LIKE ?", ["%{$search}%"])
-                        ->orWhereRaw("CONVERT(VARCHAR(19), finished_at, 120) LIKE ?", ["%{$search}%"]);
+                        ->orWhereRaw('CONVERT(VARCHAR(19), created_at, 120) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('CONVERT(VARCHAR(19), available_at, 120) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('CONVERT(VARCHAR(19), finished_at, 120) LIKE ?', ["%{$search}%"]);
                 });
             })
             ->rawColumns(['actions']);

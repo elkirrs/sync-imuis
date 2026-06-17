@@ -27,27 +27,42 @@ final class EloquentSyncRepository implements SyncRepository
         string $tableName,
         array $uniqueBy
     ): void {
+        $batch = [];
+        $seen = [];
 
-        $arrays = (function () use ($rows) {
+        foreach ($rows as $row) {
+            $data = $row->toArray();
 
-            foreach ($rows as $row) {
-                yield $row->toArray();
+            $key = $this->makeUniqueKey($data, $uniqueBy);
+
+            if (isset($seen[$key])) {
+                continue;
             }
-        })();
 
-        $rows = collect($arrays)
-            ->unique(function ($row) {
-                return md5(implode('.', $row));
-            })
-            ->values()
-            ->all();
+            $seen[$key] = true;
+            $batch[] = $data;
 
-        $this->bulkUpsert->execute(
-            connect: $this->dbConnection,
-            table: $tableName,
-            rows: $rows,
-            uniqueBy: $uniqueBy
-        );
+            if (count($batch) >= 1000) {
+                $this->bulkUpsert->execute(
+                    connect: $this->dbConnection,
+                    table: $tableName,
+                    rows: $batch,
+                    uniqueBy: $uniqueBy,
+                );
+
+                $batch = [];
+                $seen = [];
+            }
+        }
+
+        if ($batch) {
+            $this->bulkUpsert->execute(
+                connect: $this->dbConnection,
+                table: $tableName,
+                rows: $batch,
+                uniqueBy: $uniqueBy,
+            );
+        }
     }
 
     public function bulkInsert(
@@ -80,18 +95,18 @@ final class EloquentSyncRepository implements SyncRepository
     ): ?array {
 
         $onConditions = collect($keys)
-            ->map(fn($k) => "target.$k = source.$k")
+            ->map(fn ($k) => "target.$k = source.$k")
             ->implode(' AND ');
 
         $updateColumns = collect($columns)
-            ->filter(fn($c) => ! in_array($c, $keys))
-            ->map(fn($c) => "$c = source.$c")
+            ->filter(fn ($c) => ! in_array($c, $keys))
+            ->map(fn ($c) => "$c = source.$c")
             ->implode(', ');
 
         $insertColumns = implode(', ', $columns);
 
         $insertValues = collect($columns)
-            ->map(fn($c) => "source.$c")
+            ->map(fn ($c) => "source.$c")
             ->implode(', ');
 
         //        $mergeSql = '
@@ -110,15 +125,15 @@ final class EloquentSyncRepository implements SyncRepository
         //        DB::statement($mergeSql, [$sourceId]);
 
         $mergeSql = '
-                    MERGE ' . $targetTable . ' AS target
-                    USING ' . $stagingTable . ' AS source
-                    ON ' . $onConditions . '
+                    MERGE '.$targetTable.' AS target
+                    USING '.$stagingTable.' AS source
+                    ON '.$onConditions.'
                     WHEN MATCHED AND target.hash <> source.hash THEN
                         UPDATE SET
-                            ' . $updateColumns . '
+                            '.$updateColumns.'
                     WHEN NOT MATCHED BY TARGET THEN
-                        INSERT (' . $insertColumns . ')
-                        VALUES (' . $insertValues . ')
+                        INSERT ('.$insertColumns.')
+                        VALUES ('.$insertValues.')
                     OUTPUT $action, inserted.id AS inserted_id;
                 ';
 
@@ -171,5 +186,18 @@ final class EloquentSyncRepository implements SyncRepository
         return DB::connection($this->dbConnection)
             ->table($table)
             ->count();
+    }
+
+    private function makeUniqueKey(
+        array $row,
+        array $uniqueBy
+    ): string {
+        $parts = [];
+
+        foreach ($uniqueBy as $key) {
+            $parts[] = $row[$key] ?? '';
+        }
+
+        return implode('|', $parts);
     }
 }

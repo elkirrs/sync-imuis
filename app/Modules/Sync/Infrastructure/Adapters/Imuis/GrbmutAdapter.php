@@ -108,6 +108,6 @@ final class GrbmutAdapter extends AbstractAdapter
     #[Override]
     public function pageSize(): int
     {
-        return 400;
+        return 1000;
     }
 }

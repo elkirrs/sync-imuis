@@ -46,7 +46,7 @@ abstract class BaseDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return class_basename($this) . '_' . date('Ymd');
+        return class_basename($this).'_'.date('Ymd');
     }
 
     private function initFooter(): string

@@ -9,6 +9,7 @@ use App\Modules\Sync\Application\Commands\SyncCommand;
 use App\Modules\Sync\Application\Commands\SyncTaskStatusCommand;
 use App\Modules\Sync\Domain\DTO\ReasonDTO;
 use App\Modules\Sync\Domain\DTO\SyncTaskDTO;
+use App\Modules\Sync\Domain\Exceptions\EmptyDataOnPageException;
 use App\Modules\Sync\Enums\SyncTaskStatusEnum;
 use App\Shared\Infrastructure\Bus\CommandBus;
 use App\Shared\Infrastructure\Database\TenantConnectionManager;
@@ -55,7 +56,7 @@ class SyncTaskJob implements ShouldQueue
         $uuid = $this->syncTaskDTO->uuid;
         $lockKey = "lock:{$clientId}:{$table}";
         $isLock = $this->cache->acquire($lockKey, $uuid, $this->timeout);
-        $resultKey = 'sync:result:' . $this->syncTaskDTO->uuid;
+        $resultKey = 'sync:result:'.$this->syncTaskDTO->uuid;
 
         $tenantDB = Helper::TenantName($clientId);
         $tenant->connect($tenantDB);
@@ -113,6 +114,19 @@ class SyncTaskJob implements ShouldQueue
                 ),
             );
             $commandBus->dispatch($syncTaskCommand);
+        } catch (EmptyDataOnPageException $e) {
+            Log::warning('SyncTaskJob', Helper::LogErrorData($e));
+
+            $syncTaskCommand = new SyncTaskStatusCommand(
+                $this->syncTaskDTO->uuid,
+                SyncTaskStatusEnum::Finished->value,
+                new ReasonDTO(
+                    msg: 'The process was finished partly.',
+                    status: SyncTaskStatusEnum::Finished->value,
+                    details: $e->getMessage()
+                ),
+            );
+            $commandBus->dispatch($syncTaskCommand);
         } catch (Throwable $th) {
             Log::error('SyncTaskJob', Helper::LogErrorData($th));
             $this->cache->release($lockKey);
@@ -129,7 +143,7 @@ class SyncTaskJob implements ShouldQueue
             );
             $commandBus->dispatch($syncTaskCommand);
 
-            throw new Exception($th->getMessage());
+            throw $th;
         } finally {
             $this->cache->release($lockKey);
             $this->cache->release($resultKey);

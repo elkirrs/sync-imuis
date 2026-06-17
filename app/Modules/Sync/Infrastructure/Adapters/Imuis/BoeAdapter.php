@@ -71,7 +71,6 @@ final class BoeAdapter extends AbstractAdapter
         ];
     }
 
-
     // [
     //     [['JR', '=', '2024'],['PN', '=', '1'],],
     //     [['JR', '=', '2024'],['PN', '=', '2'],],
@@ -115,7 +114,7 @@ final class BoeAdapter extends AbstractAdapter
             'DAGB',
             'JR',
             'PN',
-            'RG'
+            'RG',
         ];
     }
 

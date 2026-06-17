@@ -39,7 +39,7 @@ final readonly class Helper
         int|string $name,
         string $glue = '_'
     ): string {
-        return config('tenant.prefix') . $glue . $name;
+        return config('tenant.prefix').$glue.$name;
     }
 
     public static function escapeLike(

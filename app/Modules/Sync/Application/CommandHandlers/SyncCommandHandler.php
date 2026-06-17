@@ -71,7 +71,7 @@ final readonly class SyncCommandHandler
 
     ): void {
         $table = ImuisDataTableEnum::fromName($command->table)->value;
-        $stagingTable = 'staging_' . $table;
+        $stagingTable = 'staging_'.$table;
 
         $this->syncRepository->delete($stagingTable, $connect->id->value);
 
@@ -81,8 +81,8 @@ final readonly class SyncCommandHandler
         $columns[] = 'hash';
 
         array_map('strtolower', $adaptor->unique())
-        |> (fn($x) => array_merge(['connect_id'], $x))
-        |> (fn($x) => $this->syncRepository->merge(
+        |> (fn ($x) => array_merge(['connect_id'], $x))
+        |> (fn ($x) => $this->syncRepository->merge(
             targetTable: $table,
             stagingTable: $stagingTable,
             keys: $x,
@@ -105,8 +105,8 @@ final readonly class SyncCommandHandler
         $this->syncRepository->setConnection('tenant');
 
         array_map('strtolower', $adaptor->unique())
-        |> (fn($x) => array_merge(['connect_id'], $x))
-        |> (fn($x) => $this->syncRepository->bulkUpsert(
+        |> (fn ($x) => array_merge(['connect_id'], $x))
+        |> (fn ($x) => $this->syncRepository->bulkUpsert(
             rows: $rows,
             tableName: $table,
             uniqueBy: $x
@@ -126,6 +126,6 @@ final readonly class SyncCommandHandler
             'count' => $countRows,
         ];
 
-        $this->cache->acquire('sync:result:' . $command->uuid, json_encode($data), 180);
+        $this->cache->acquire('sync:result:'.$command->uuid, json_encode($data), 180);
     }
 }
