@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Sync\Application\CommandHandlers;
 
 use App\Modules\Sync\Application\Commands\SyncChangeStatusCommand;
+use App\Modules\Sync\Application\Jobs\SyncTaskJob;
 use App\Modules\Sync\Domain\Repositories\SyncTaskRepository;
 use App\Modules\Sync\Enums\SyncTaskStatusEnum;
-use App\Shared\Domain\Cache\CacheStorage;
-use App\Modules\Sync\Application\Jobs\SyncTaskJob;
 use App\Modules\Sync\Infrastructure\Mappers\SyncTaskMapper;
-
+use App\Shared\Domain\Cache\CacheStorage;
 use DomainException;
 
 final readonly class SyncChangeStatusCommandHandler
