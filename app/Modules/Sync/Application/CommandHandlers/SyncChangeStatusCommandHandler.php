@@ -8,6 +8,9 @@ use App\Modules\Sync\Application\Commands\SyncChangeStatusCommand;
 use App\Modules\Sync\Domain\Repositories\SyncTaskRepository;
 use App\Modules\Sync\Enums\SyncTaskStatusEnum;
 use App\Shared\Domain\Cache\CacheStorage;
+use App\Modules\Sync\Application\Jobs\SyncTaskJob;
+use App\Modules\Sync\Infrastructure\Mappers\SyncTaskMapper;
+
 use DomainException;
 
 final readonly class SyncChangeStatusCommandHandler
@@ -37,6 +40,11 @@ final readonly class SyncChangeStatusCommandHandler
 
             if ($isRunnig) {
                 continue;
+            }
+
+            if ($entity->status->value === SyncTaskStatusEnum::Waiting->value) {
+                SyncTaskJob::dispatch(SyncTaskMapper::toDTO($entity))
+                    ->onQueue('sync');
             }
 
             // if the rows will be a lot, than it will be better to do bulk update (upsert)
