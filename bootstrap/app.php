@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Middleware\Authorization;
 use App\Modules\Connection\Interfaces\Console\TenantMigrateCommand;
 use App\Modules\Connection\Interfaces\Console\TenantMigrateRollbackCommand;
+use App\Modules\Sync\Interfaces\Console\SyncChangeStatusCommand;
 use App\Modules\Sync\Interfaces\Console\SyncCommand;
 use App\Modules\Sync\Interfaces\Console\SyncTaskCreateCommand;
 use Illuminate\Foundation\Application;
@@ -30,5 +31,6 @@ return Application::configure(basePath: dirname(__DIR__))
         SyncTaskCreateCommand::class,
         TenantMigrateCommand::class,
         TenantMigrateRollbackCommand::class,
+        SyncChangeStatusCommand::class,
     ])
     ->create();

@@ -80,4 +80,14 @@ final class EloquentSyncTaskRepository implements SyncTaskRepository
 
         return $this;
     }
+
+    public function findByStatus(
+        int $value
+    ): array {
+        return $this->repository->query()
+            ->where('status', '=', $value)
+            ->get()
+            ->map(fn ($model) => SyncTaskMapper::toEntity($model))
+            ->all();
+    }
 }

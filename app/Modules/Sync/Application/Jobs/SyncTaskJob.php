@@ -11,9 +11,9 @@ use App\Modules\Sync\Domain\DTO\ReasonDTO;
 use App\Modules\Sync\Domain\DTO\SyncTaskDTO;
 use App\Modules\Sync\Domain\Exceptions\EmptyDataOnPageException;
 use App\Modules\Sync\Enums\SyncTaskStatusEnum;
+use App\Shared\Domain\Cache\CacheStorage;
 use App\Shared\Infrastructure\Bus\CommandBus;
 use App\Shared\Infrastructure\Database\TenantConnectionManager;
-use App\Shared\Infrastructure\Persistence\CacheStorage;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -24,7 +24,7 @@ class SyncTaskJob implements ShouldQueue
 {
     use Queueable;
 
-    public int $timeout = 13200; // 220 minutes
+    public int $timeout = 28800; // 8 hours
 
     public int $tries = 3;
 

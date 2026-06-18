@@ -28,4 +28,19 @@ enum SyncTaskStatusEnum: int
             self::Duplicate => 'duplicate',
         };
     }
+
+    public static function fromString(string $status): self
+    {
+        return match ($status) {
+            'created' => self::Created,
+            'waiting' => self::Waiting,
+            'started' => self::Started,
+            'processing' => self::Processing,
+            'finished' => self::Finished,
+            'failed' => self::Failed,
+            'queue' => self::Queue,
+            'duplicate' => self::Duplicate,
+            default => throw new \InvalidArgumentException("Unknown status: $status"),
+        };
+    }
 }

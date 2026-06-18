@@ -10,10 +10,10 @@ use App\Modules\Sync\Application\Commands\SyncCommand;
 use App\Modules\Sync\Domain\Repositories\SyncRepository;
 use App\Modules\Sync\Infrastructure\Contracts\TableAdapter;
 use App\Modules\Sync\Infrastructure\Factories\TableAdaptorFactory;
+use App\Shared\Domain\Cache\CacheStorage;
 use App\Shared\Enums\ImuisDataTableEnum;
 use App\Shared\Infrastructure\Connections\IntegrationConnection;
 use App\Shared\Infrastructure\Factories\ClientFactory;
-use App\Shared\Infrastructure\Persistence\CacheStorage;
 
 use function array_map;
 

@@ -7,9 +7,9 @@ namespace App\Modules\Sync\Infrastructure\ExternalClients;
 use App\Helpers\Helper;
 use App\Modules\Sync\Domain\DTO\QueryDTO;
 use App\Modules\Sync\Domain\Exceptions\EmptyDataOnPageException;
+use App\Shared\Domain\Cache\CacheStorage;
 use App\Shared\Domain\Contracts\ExternalClient;
 use App\Shared\Infrastructure\ExternalClient\AbstractExternalClient;
-use App\Shared\Infrastructure\Persistence\CacheStorage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
@@ -35,7 +35,7 @@ final class ImuisClient extends AbstractExternalClient implements ExternalClient
 
     public function __construct()
     {
-        $this->cache = new CacheStorage;
+        $this->cache = app(CacheStorage::class);
     }
 
     protected function baseUrl(): string

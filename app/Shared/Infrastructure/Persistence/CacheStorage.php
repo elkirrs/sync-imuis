@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Persistence;
 
+use App\Shared\Domain\Cache\CacheStorage as ICacheStorage;
 use Illuminate\Support\Facades\Cache;
 
-class CacheStorage
+final class CacheStorage implements ICacheStorage
 {
     public function acquire(
         string $key,
@@ -28,6 +29,5 @@ class CacheStorage
     ): ?string {
 
         return Cache::get($key, $default);
-
     }
 }

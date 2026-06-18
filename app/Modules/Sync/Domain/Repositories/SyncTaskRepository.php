@@ -16,5 +16,7 @@ interface SyncTaskRepository
 
     public function findOne(string $uuid): SyncTaskEntity;
 
+    public function findByStatus(int $value): array;
+
     public function setConnection(string $connection): self;
 }
